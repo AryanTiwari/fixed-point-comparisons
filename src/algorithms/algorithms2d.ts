@@ -9,10 +9,6 @@ import type {
 } from './types';
 
 // Vector operations for 2D
-function add(a: Point2D, b: Point2D): Point2D {
-  return [a[0] + b[0], a[1] + b[1]];
-}
-
 function sub(a: Point2D, b: Point2D): Point2D {
   return [a[0] - b[0], a[1] - b[1]];
 }

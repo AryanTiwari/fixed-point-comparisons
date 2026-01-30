@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type {
-  IterationResult2D,
   AlgorithmConfig,
   AndersonConfig,
   ExampleFunction2D,

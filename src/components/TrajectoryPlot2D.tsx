@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react';
-import { Mafs, Coordinates, Point, Line, Vector } from 'mafs';
+import { Mafs, Coordinates, Point, Line } from 'mafs';
 import 'mafs/core.css';
 import type { ExampleFunction2D, IterationResult2D, AlgorithmType } from '../algorithms/types';
 import { ALGORITHMS } from '../algorithms/types';
