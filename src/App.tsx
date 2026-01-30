@@ -123,20 +123,9 @@ function App() {
           </div>
         </div>
 
-        {/* Main Content: Metrics + Graphs + Controls */}
+        {/* Main Content: Graphs + Controls */}
         <div className="flex gap-6">
-          {/* Metrics Panel - Left Side */}
-          <div className="w-80 flex-shrink-0">
-            <MetricsPanel
-              results={runner.results}
-              enabledAlgorithms={enabledAlgorithms}
-              currentStep={runner.animation.currentStep}
-              fixedPoint={selectedFunction.fixedPoint}
-              isDark={isDark}
-            />
-          </div>
-
-          {/* 2x2 Graph Grid - Center */}
+          {/* 2x2 Graph Grid */}
           <div className="flex-1">
             <GraphGrid
               func={selectedFunction}
@@ -177,6 +166,17 @@ function App() {
               isDark={isDark}
             />
           </div>
+        </div>
+
+        {/* Metrics Panel - Below Graphs */}
+        <div className="mt-6">
+          <MetricsPanel
+            results={runner.results}
+            enabledAlgorithms={enabledAlgorithms}
+            currentStep={runner.animation.currentStep}
+            fixedPoint={selectedFunction.fixedPoint}
+            isDark={isDark}
+          />
         </div>
 
         {/* Algorithm Formula Cards */}
