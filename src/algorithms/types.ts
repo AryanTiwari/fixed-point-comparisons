@@ -47,6 +47,47 @@ export interface AlgorithmInfo {
   description: string;
 }
 
+// ============ 2D Types ============
+
+export type Point2D = [number, number];
+
+export interface IterationStep2D {
+  iteration: number;
+  x: Point2D;           // Current point (x, y)
+  gx: Point2D;          // g(x, y) value
+  residual: number;     // ||g(x) - x||
+}
+
+export interface IterationResult2D {
+  steps: IterationStep2D[];
+  converged: boolean;
+  finalX: Point2D;
+  totalIterations: number;
+}
+
+export type FixedPointFunction2D = (p: Point2D) => Point2D;
+export type JacobianFunction2D = (p: Point2D) => [[number, number], [number, number]];
+
+export interface ExampleFunction2D {
+  id: string;
+  name: string;
+  description: string;
+  g: FixedPointFunction2D;          // Fixed-point form: x = g(x)
+  jacobian?: JacobianFunction2D;    // Jacobian for Newton's method (optional)
+  defaultX0: Point2D;
+  fixedPoint: Point2D;              // Known solution for reference
+  domain: { x: [number, number]; y: [number, number] };  // Visualization domain
+}
+
+export interface AlgorithmResults2D {
+  'fixed-point': IterationResult2D | null;
+  'anderson': IterationResult2D | null;
+  'steffensen': IterationResult2D | null;
+  'newton': IterationResult2D | null;
+}
+
+// ============ Algorithm Constants ============
+
 export const ALGORITHMS: AlgorithmInfo[] = [
   {
     id: 'fixed-point',
