@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo } from 'react';
-import { Mafs, Coordinates, Point, Line } from 'mafs';
+import { Mafs, Coordinates, Point, Line, Vector } from 'mafs';
 import 'mafs/core.css';
-import type { ExampleFunction2D, IterationResult2D, AlgorithmType } from '../algorithms/types';
+import type { ExampleFunction2D, IterationResult2D, AlgorithmType, Point2D } from '../algorithms/types';
 import { ALGORITHMS } from '../algorithms/types';
 
 // Steffensen's method doesn't generalize well to 2D
@@ -171,7 +171,7 @@ export function TrajectoryPlot2D({
       >
         <Mafs
           viewBox={{ x: viewBox.x, y: viewBox.y }}
-          preserveAspectRatio={false}
+          preserveAspectRatio="contain"
           pan={false}
         >
           <Coordinates.Cartesian
@@ -183,6 +183,13 @@ export function TrajectoryPlot2D({
               lines: tickInterval,
               labels: (n) => formatAxisLabel(n, tickInterval)
             }}
+          />
+
+          {/* Vector field showing function behavior */}
+          <VectorField2D
+            func={func}
+            viewBox={viewBox}
+            isDark={isDark}
           />
 
           {/* Fixed point marker */}
@@ -283,6 +290,91 @@ function Trajectory2D({ result, color, currentStep }: Trajectory2DProps) {
           </g>
         );
       })}
+    </>
+  );
+}
+
+interface VectorField2DProps {
+  func: ExampleFunction2D;
+  viewBox: ViewBox2D;
+  isDark: boolean;
+}
+
+function VectorField2D({ func, viewBox, isDark }: VectorField2DProps) {
+  const gridSize = 12; // Number of vectors in each direction
+
+  const vectors = useMemo(() => {
+    const result: Array<{ origin: Point2D; displacement: Point2D; magnitude: number }> = [];
+
+    const xMin = viewBox.x[0];
+    const xMax = viewBox.x[1];
+    const yMin = viewBox.y[0];
+    const yMax = viewBox.y[1];
+
+    const xStep = (xMax - xMin) / (gridSize + 1);
+    const yStep = (yMax - yMin) / (gridSize + 1);
+
+    // Calculate all displacements first to find max magnitude for scaling
+    const displacements: Array<{ origin: Point2D; dx: number; dy: number }> = [];
+    let maxMag = 0;
+
+    for (let i = 1; i <= gridSize; i++) {
+      for (let j = 1; j <= gridSize; j++) {
+        const x = xMin + i * xStep;
+        const y = yMin + j * yStep;
+
+        try {
+          const gResult = func.g([x, y]);
+          const dx = gResult[0] - x;
+          const dy = gResult[1] - y;
+
+          if (isFinite(dx) && isFinite(dy)) {
+            const mag = Math.sqrt(dx * dx + dy * dy);
+            if (mag > 0.0001) { // Skip near-zero vectors
+              maxMag = Math.max(maxMag, mag);
+              displacements.push({ origin: [x, y], dx, dy });
+            }
+          }
+        } catch {
+          // Skip points where function fails
+        }
+      }
+    }
+
+    // Scale vectors to be visible but not too large
+    const viewScale = Math.min(xMax - xMin, yMax - yMin);
+    const targetLength = viewScale / (gridSize * 1.5); // Target arrow length
+    const scale = maxMag > 0 ? targetLength / maxMag : 1;
+
+    for (const { origin, dx, dy } of displacements) {
+      const mag = Math.sqrt(dx * dx + dy * dy);
+      const scaledDx = dx * scale;
+      const scaledDy = dy * scale;
+
+      result.push({
+        origin,
+        displacement: [scaledDx, scaledDy],
+        magnitude: mag
+      });
+    }
+
+    return result;
+  }, [func, viewBox]);
+
+  const vectorColor = isDark ? 'rgba(148, 163, 184, 0.4)' : 'rgba(100, 116, 139, 0.35)';
+
+  return (
+    <>
+      {vectors.map((v, i) => (
+        <Vector
+          key={i}
+          tail={v.origin}
+          tip={[v.origin[0] + v.displacement[0], v.origin[1] + v.displacement[1]]}
+          color={vectorColor}
+          weight={1.5}
+          style="solid"
+        />
+      ))}
     </>
   );
 }
