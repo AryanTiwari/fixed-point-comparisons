@@ -8,3 +8,4 @@ export { MetricsPanel2D } from './MetricsPanel2D';
 export { Formula } from './Formula';
 export { TrajectoryPlot2D } from './TrajectoryPlot2D';
 export type { ViewBox2D } from './TrajectoryPlot2D';
+export { AnimationControls } from './AnimationControls';

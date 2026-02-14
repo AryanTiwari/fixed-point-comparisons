@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GraphGrid, ControlPanel, ControlPanel2D, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D } from './components';
+import { GraphGrid, ControlPanel, ControlPanel2D, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls } from './components';
 import type { ViewBox2D } from './components';
 import { useIterationRunner } from './hooks/useIterationRunner';
 import { useIterationRunner2D } from './hooks/useIterationRunner2D';
@@ -113,8 +113,11 @@ function App() {
 
   const isDark = theme === 'dark';
 
+  // Get current runner based on mode
+  const currentRunner = mode === '1d' ? runner : runner2D;
+
   return (
-    <div className={`min-h-screen p-4 md:p-8 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen p-4 md:p-8 pb-24 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-50 text-slate-900'}`}>
       {/* Background gradient effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-purple-500/10' : 'bg-purple-500/5'}`} />
@@ -250,17 +253,6 @@ function App() {
                   onAndersonMemoryChange={setAndersonMemory}
                   enabledAlgorithms={enabledAlgorithms}
                   onToggleAlgorithm={handleToggleAlgorithm}
-                  animationSpeed={runner.animation.speed}
-                  onSpeedChange={runner.setSpeed}
-                  isPlaying={runner.animation.isPlaying}
-                  currentStep={runner.animation.currentStep}
-                  maxSteps={runner.maxSteps}
-                  onRun={runner.runAll}
-                  onReset={runner.reset}
-                  onPlay={runner.play}
-                  onPause={runner.pause}
-                  onStepForward={runner.stepForward}
-                  onStepBackward={runner.stepBackward}
                   isDark={isDark}
                 />
               </div>
@@ -364,17 +356,6 @@ function App() {
                   onAndersonMemoryChange={setAndersonMemory}
                   enabledAlgorithms={enabledAlgorithms}
                   onToggleAlgorithm={handleToggleAlgorithm}
-                  animationSpeed={runner2D.animation.speed}
-                  onSpeedChange={runner2D.setSpeed}
-                  isPlaying={runner2D.animation.isPlaying}
-                  currentStep={runner2D.animation.currentStep}
-                  maxSteps={runner2D.maxSteps}
-                  onRun={runner2D.runAll}
-                  onReset={runner2D.reset}
-                  onPlay={runner2D.play}
-                  onPause={runner2D.pause}
-                  onStepForward={runner2D.stepForward}
-                  onStepBackward={runner2D.stepBackward}
                   isDark={isDark}
                 />
               </div>
@@ -415,6 +396,22 @@ function App() {
           </>
         )}
       </div>
+
+      {/* Floating Animation Controls */}
+      <AnimationControls
+        isPlaying={currentRunner.animation.isPlaying}
+        currentStep={currentRunner.animation.currentStep}
+        maxSteps={currentRunner.maxSteps}
+        animationSpeed={currentRunner.animation.speed}
+        onSpeedChange={currentRunner.setSpeed}
+        onRun={currentRunner.runAll}
+        onReset={currentRunner.reset}
+        onPlay={currentRunner.play}
+        onPause={currentRunner.pause}
+        onStepForward={currentRunner.stepForward}
+        onStepBackward={currentRunner.stepBackward}
+        isDark={isDark}
+      />
     </div>
   );
 }

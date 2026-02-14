@@ -15,17 +15,6 @@ interface ControlPanelProps {
   onAndersonMemoryChange: (m: number) => void;
   enabledAlgorithms: Set<AlgorithmType>;
   onToggleAlgorithm: (algo: AlgorithmType) => void;
-  animationSpeed: number;
-  onSpeedChange: (speed: number) => void;
-  isPlaying: boolean;
-  currentStep: number;
-  maxSteps: number;
-  onRun: () => void;
-  onReset: () => void;
-  onPlay: () => void;
-  onPause: () => void;
-  onStepForward: () => void;
-  onStepBackward: () => void;
   isDark: boolean;
 }
 
@@ -42,17 +31,6 @@ export function ControlPanel({
   onAndersonMemoryChange,
   enabledAlgorithms,
   onToggleAlgorithm,
-  animationSpeed,
-  onSpeedChange,
-  isPlaying,
-  currentStep,
-  maxSteps,
-  onRun,
-  onReset,
-  onPlay,
-  onPause,
-  onStepForward,
-  onStepBackward,
   isDark
 }: ControlPanelProps) {
   return (
@@ -206,108 +184,6 @@ export function ControlPanel({
           ))}
         </div>
       </div>
-
-      {/* Animation Speed */}
-      <div>
-        <label className={`block text-sm mb-2 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-          Animation Speed: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{animationSpeed}ms</span>
-        </label>
-        <input
-          type="range"
-          min={50}
-          max={1000}
-          step={50}
-          value={animationSpeed}
-          onChange={(e) => onSpeedChange(parseInt(e.target.value))}
-          className="w-full slider"
-        />
-        <div className={`flex justify-between text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-          <span className="font-mono">50ms</span>
-          <span>faster ← → slower</span>
-          <span className="font-mono">1000ms</span>
-        </div>
-      </div>
-
-      {/* Run/Reset Buttons */}
-      <div className="flex gap-3 pt-2">
-        <button
-          onClick={onRun}
-          className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-medium py-2.5 px-4 rounded-lg shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/30 transition-all duration-200 hover:-translate-y-0.5"
-        >
-          Run
-        </button>
-        <button
-          onClick={onReset}
-          className={`flex-1 font-medium py-2.5 px-4 rounded-lg transition-all duration-200 ${
-            isDark
-              ? 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white'
-              : 'bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700'
-          }`}
-        >
-          Reset
-        </button>
-      </div>
-
-      {/* Playback Controls */}
-      {maxSteps > 0 && (
-        <div className={`space-y-3 pt-2 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          <div className="flex items-center justify-between text-sm">
-            <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Step</span>
-            <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentStep + 1} / {maxSteps}</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={onStepBackward}
-              disabled={currentStep === 0}
-              className={`flex-1 font-medium py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed ${
-                isDark
-                  ? 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'
-                  : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Prev
-            </button>
-            <button
-              onClick={isPlaying ? onPause : onPlay}
-              disabled={currentStep >= maxSteps - 1 && !isPlaying}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-medium py-2 px-3 rounded-lg shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-1"
-            >
-              {isPlaying ? (
-                <>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                  Pause
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  Play
-                </>
-              )}
-            </button>
-            <button
-              onClick={onStepForward}
-              disabled={currentStep >= maxSteps - 1}
-              className={`flex-1 font-medium py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed ${
-                isDark
-                  ? 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'
-                  : 'bg-white border border-slate-200 hover:bg-slate-50 text-slate-700'
-              }`}
-            >
-              Next
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
