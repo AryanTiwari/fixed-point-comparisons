@@ -118,16 +118,16 @@ export function ControlPanel2D({
         </label>
         <input
           type="range"
-          min={1}
-          max={5}
+          min={0}
+          max={3}
           step={1}
           value={andersonMemory}
           onChange={(e) => onAndersonMemoryChange(parseInt(e.target.value))}
           className="w-full slider"
         />
         <div className={`flex justify-between text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-          <span className="font-mono">1</span>
-          <span className="font-mono">5</span>
+          <span className="font-mono">0</span>
+          <span className="font-mono">3</span>
         </div>
         <p className={`text-xs mt-2 ${isDark ? 'text-green-400/80' : 'text-green-600'}`}>
           In 2D, memory &gt; 1 allows combining residual directions for faster convergence!

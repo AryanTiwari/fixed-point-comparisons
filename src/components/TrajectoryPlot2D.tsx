@@ -1,8 +1,25 @@
 import { useRef, useEffect, useMemo } from 'react';
-import { Mafs, Coordinates, Point, Line, Vector } from 'mafs';
+import { Mafs, Coordinates, Point, Line, Vector, LaTeX } from 'mafs';
 import 'mafs/core.css';
 import type { ExampleFunction2D, IterationResult2D, AlgorithmType, Point2D } from '../algorithms/types';
 import { ALGORITHMS } from '../algorithms/types';
+
+// Label component for points on the graph
+interface LabelProps {
+  position: Point2D;
+  text: string;
+  color: string;
+  offset?: { x: number; y: number };
+}
+
+function Label({ position, text, color, offset = { x: 0.15, y: 0.15 } }: LabelProps) {
+  return (
+    <LaTeX
+      at={[position[0] + offset.x, position[1] + offset.y]}
+      tex={`\\textcolor{${color}}{\\textsf{${text}}}`}
+    />
+  );
+}
 
 // Steffensen's method doesn't generalize well to 2D
 const ALGORITHMS_2D = ALGORITHMS.filter(a => a.id !== 'steffensen');
@@ -23,26 +40,38 @@ interface TrajectoryPlot2DProps {
   currentStep: number;
   enabledAlgorithms: Set<AlgorithmType>;
   viewBox: ViewBox2D;
+  initialDomain: ViewBox2D;  // For fixed vector field and consistent panning
   onPan: (dx: number, dy: number) => void;
   onZoom: (zoomIn: boolean, centerX: number, centerY: number) => void;
+  x0: Point2D;
   isDark: boolean;
 }
 
 // Calculate nice tick interval based on range
+// Ensures we always have between 3-8 grid lines visible regardless of zoom level
 function calculateTickInterval(range: number): number {
-  const roughTickCount = 5;
-  const roughInterval = range / roughTickCount;
+  // Target 4-6 grid lines in the visible area
+  const targetTickCount = 5;
+  const roughInterval = range / targetTickCount;
+
+  // Find the order of magnitude
   const magnitude = Math.pow(10, Math.floor(Math.log10(roughInterval)));
   const residual = roughInterval / magnitude;
 
+  // Round to a "nice" number (1, 2, 5, or 10)
   let niceInterval: number;
   if (residual <= 1.5) niceInterval = 1;
   else if (residual <= 3) niceInterval = 2;
   else if (residual <= 7) niceInterval = 5;
   else niceInterval = 10;
 
+  const interval = niceInterval * magnitude;
+
+  // Enforce bounds: at least 3 lines, at most 8 lines
   const minInterval = range / 8;
-  return Math.max(niceInterval * magnitude, minInterval);
+  const maxInterval = range / 3;
+
+  return Math.max(minInterval, Math.min(maxInterval, interval));
 }
 
 function formatAxisLabel(value: number, interval: number): string {
@@ -58,8 +87,10 @@ export function TrajectoryPlot2D({
   currentStep,
   enabledAlgorithms,
   viewBox,
+  initialDomain,
   onPan,
   onZoom,
+  x0,
   isDark
 }: TrajectoryPlot2DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,6 +99,11 @@ export function TrajectoryPlot2D({
 
   const xRange = viewBox.x[1] - viewBox.x[0];
   const yRange = viewBox.y[1] - viewBox.y[0];
+
+  // Use initial domain for consistent pan speed regardless of zoom level
+  const basePanRangeX = initialDomain.x[1] - initialDomain.x[0];
+  const basePanRangeY = initialDomain.y[1] - initialDomain.y[0];
+
   const tickInterval = useMemo(() => {
     return calculateTickInterval(Math.max(xRange, yRange));
   }, [xRange, yRange]);
@@ -83,8 +119,9 @@ export function TrajectoryPlot2D({
     if (!isDragging.current || !containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
-    const dx = -((e.clientX - lastPos.current.x) / rect.width) * xRange;
-    const dy = ((e.clientY - lastPos.current.y) / rect.height) * yRange;
+    // Use fixed base range for consistent pan speed regardless of zoom
+    const dx = -((e.clientX - lastPos.current.x) / rect.width) * basePanRangeX;
+    const dy = ((e.clientY - lastPos.current.y) / rect.height) * basePanRangeY;
 
     lastPos.current = { x: e.clientX, y: e.clientY };
     onPan(dx, dy);
@@ -185,27 +222,40 @@ export function TrajectoryPlot2D({
             }}
           />
 
-          {/* Vector field showing function behavior */}
+          {/* Vector field showing function behavior - uses initial domain for consistency */}
           <VectorField2D
             func={func}
+            domain={initialDomain}
             viewBox={viewBox}
             isDark={isDark}
           />
 
-          {/* Fixed point marker */}
+          {/* Fixed point (end) marker with label */}
           <Point
             x={func.fixedPoint[0]}
             y={func.fixedPoint[1]}
             color="#f59e0b"
             opacity={0.9}
           />
+          <Label
+            position={func.fixedPoint}
+            text="End"
+            color="orange"
+            offset={{ x: 0.12 * (xRange / 4), y: 0.12 * (yRange / 4) }}
+          />
 
-          {/* Starting point marker */}
+          {/* Starting point marker with label */}
           <Point
-            x={func.defaultX0[0]}
-            y={func.defaultX0[1]}
+            x={x0[0]}
+            y={x0[1]}
             color="#06b6d4"
             opacity={0.9}
+          />
+          <Label
+            position={x0}
+            text="Start"
+            color="cyan"
+            offset={{ x: 0.12 * (xRange / 4), y: -0.18 * (yRange / 4) }}
           />
 
           {/* Render trajectories for each enabled algorithm */}
@@ -236,7 +286,7 @@ export function TrajectoryPlot2D({
           </span>
           <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
             Start: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              ({func.defaultX0[0].toFixed(2)}, {func.defaultX0[1].toFixed(2)})
+              ({x0[0].toFixed(2)}, {x0[1].toFixed(2)})
             </span>
           </span>
         </div>
@@ -296,27 +346,30 @@ function Trajectory2D({ result, color, currentStep }: Trajectory2DProps) {
 
 interface VectorField2DProps {
   func: ExampleFunction2D;
-  viewBox: ViewBox2D;
+  domain: ViewBox2D;  // Fixed domain for consistent vector field
+  viewBox: ViewBox2D; // Current viewBox (for filtering visible vectors)
   isDark: boolean;
 }
 
-function VectorField2D({ func, viewBox, isDark }: VectorField2DProps) {
-  const gridSize = 12; // Number of vectors in each direction
+function VectorField2D({ func, domain, viewBox, isDark }: VectorField2DProps) {
+  const gridSize = 10; // Number of vectors in each direction
 
   const vectors = useMemo(() => {
     const result: Array<{ origin: Point2D; displacement: Point2D; magnitude: number }> = [];
 
-    const xMin = viewBox.x[0];
-    const xMax = viewBox.x[1];
-    const yMin = viewBox.y[0];
-    const yMax = viewBox.y[1];
+    // Use fixed domain for vector positions (doesn't change with zoom)
+    const xMin = domain.x[0];
+    const xMax = domain.x[1];
+    const yMin = domain.y[0];
+    const yMax = domain.y[1];
 
-    const xStep = (xMax - xMin) / (gridSize + 1);
-    const yStep = (yMax - yMin) / (gridSize + 1);
+    const xRange = xMax - xMin;
+    const yRange = yMax - yMin;
+    const xStep = xRange / (gridSize + 1);
+    const yStep = yRange / (gridSize + 1);
 
-    // Calculate all displacements first to find max magnitude for scaling
-    const displacements: Array<{ origin: Point2D; dx: number; dy: number }> = [];
-    let maxMag = 0;
+    // Fixed arrow length based on initial domain (smaller arrows)
+    const fixedArrowLength = Math.min(xRange, yRange) / 28;
 
     for (let i = 1; i <= gridSize; i++) {
       for (let j = 1; j <= gridSize; j++) {
@@ -331,8 +384,17 @@ function VectorField2D({ func, viewBox, isDark }: VectorField2DProps) {
           if (isFinite(dx) && isFinite(dy)) {
             const mag = Math.sqrt(dx * dx + dy * dy);
             if (mag > 0.0001) { // Skip near-zero vectors
-              maxMag = Math.max(maxMag, mag);
-              displacements.push({ origin: [x, y], dx, dy });
+              // Normalize direction and apply fixed length
+              const nx = dx / mag;
+              const ny = dy / mag;
+              const scaledDx = nx * fixedArrowLength;
+              const scaledDy = ny * fixedArrowLength;
+
+              result.push({
+                origin: [x, y],
+                displacement: [scaledDx, scaledDy],
+                magnitude: mag
+              });
             }
           }
         } catch {
@@ -341,31 +403,24 @@ function VectorField2D({ func, viewBox, isDark }: VectorField2DProps) {
       }
     }
 
-    // Scale vectors to be visible but not too large
-    const viewScale = Math.min(xMax - xMin, yMax - yMin);
-    const targetLength = viewScale / (gridSize * 1.5); // Target arrow length
-    const scale = maxMag > 0 ? targetLength / maxMag : 1;
-
-    for (const { origin, dx, dy } of displacements) {
-      const mag = Math.sqrt(dx * dx + dy * dy);
-      const scaledDx = dx * scale;
-      const scaledDy = dy * scale;
-
-      result.push({
-        origin,
-        displacement: [scaledDx, scaledDy],
-        magnitude: mag
-      });
-    }
-
     return result;
-  }, [func, viewBox]);
+  }, [func, domain]); // Only depends on func and domain, not viewBox
 
-  const vectorColor = isDark ? 'rgba(148, 163, 184, 0.4)' : 'rgba(100, 116, 139, 0.35)';
+  // Filter to only show vectors within the current viewBox (with some margin)
+  const margin = 0.5;
+  const visibleVectors = vectors.filter(v => {
+    const x = v.origin[0];
+    const y = v.origin[1];
+    return x >= viewBox.x[0] - margin && x <= viewBox.x[1] + margin &&
+           y >= viewBox.y[0] - margin && y <= viewBox.y[1] + margin;
+  });
+
+  // More visible colors with better contrast
+  const vectorColor = isDark ? 'rgba(148, 163, 184, 0.6)' : 'rgba(71, 85, 105, 0.5)';
 
   return (
     <>
-      {vectors.map((v, i) => (
+      {visibleVectors.map((v, i) => (
         <Vector
           key={i}
           tail={v.origin}

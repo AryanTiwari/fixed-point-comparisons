@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GraphGrid, ControlPanel, ControlPanel2D, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls } from './components';
+import { GraphGrid, ControlPanel, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls } from './components';
 import type { ViewBox2D } from './components';
 import { useIterationRunner } from './hooks/useIterationRunner';
 import { useIterationRunner2D } from './hooks/useIterationRunner2D';
@@ -117,7 +117,7 @@ function App() {
   const currentRunner = mode === '1d' ? runner : runner2D;
 
   return (
-    <div className={`min-h-screen p-4 md:p-8 pb-24 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen p-4 md:p-8 pb-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-50 text-slate-900'}`}>
       {/* Background gradient effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-purple-500/10' : 'bg-purple-500/5'}`} />
@@ -325,9 +325,118 @@ function App() {
               </div>
             </div>
 
-            {/* Main Content: Trajectory Plot + Controls */}
-            <div className="flex gap-6">
-              {/* Trajectory Plot */}
+            {/* Main Content: Left Controls + Trajectory Plot + Right Controls */}
+            <div className="flex gap-4">
+              {/* Left Panel - Function & Starting Point */}
+              <div className="w-56 flex-shrink-0">
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Function & Start
+                  </h3>
+
+                  {/* Function Selection */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Function</label>
+                    <select
+                      value={selectedFunction2D.id}
+                      onChange={(e) => {
+                        const func = EXAMPLE_FUNCTIONS_2D.find(f => f.id === e.target.value);
+                        if (func) handleFunction2DChange(func);
+                      }}
+                      className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer ${
+                        isDark
+                          ? 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                          : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
+                      }`}
+                    >
+                      {EXAMPLE_FUNCTIONS_2D.map(f => (
+                        <option key={f.id} value={f.id} className={isDark ? 'bg-slate-900' : 'bg-white'}>
+                          {f.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Starting Point X */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Start X: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{runner2D.x0[0].toFixed(2)}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={selectedFunction2D.domain.x[0]}
+                      max={selectedFunction2D.domain.x[1]}
+                      step={0.05}
+                      value={runner2D.x0[0]}
+                      onChange={(e) => runner2D.setX0([parseFloat(e.target.value), runner2D.x0[1]])}
+                      className="w-full slider"
+                    />
+                  </div>
+
+                  {/* Starting Point Y */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Start Y: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{runner2D.x0[1].toFixed(2)}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={selectedFunction2D.domain.y[0]}
+                      max={selectedFunction2D.domain.y[1]}
+                      step={0.05}
+                      value={runner2D.x0[1]}
+                      onChange={(e) => runner2D.setX0([runner2D.x0[0], parseFloat(e.target.value)])}
+                      className="w-full slider"
+                    />
+                  </div>
+
+                  {/* Algorithm Selection - Compact */}
+                  <div>
+                    <label className={`block text-xs mb-2 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Algorithms</label>
+                    <div className="space-y-1.5">
+                      {['fixed-point', 'anderson', 'newton'].map(algoId => {
+                        const algo = {
+                          'fixed-point': { name: 'Fixed-Point', color: '#ef4444' },
+                          'anderson': { name: 'Anderson', color: '#22c55e' },
+                          'newton': { name: 'Newton', color: '#f59e0b' }
+                        }[algoId];
+                        return (
+                          <label
+                            key={algoId}
+                            className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
+                              enabledAlgorithms.has(algoId as AlgorithmType)
+                                ? isDark
+                                  ? 'bg-white/10 border-white/20'
+                                  : 'bg-slate-100 border-slate-300'
+                                : isDark
+                                  ? 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
+                                  : 'bg-white border-slate-200 opacity-60 hover:opacity-100'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={enabledAlgorithms.has(algoId as AlgorithmType)}
+                              onChange={() => handleToggleAlgorithm(algoId as AlgorithmType)}
+                              className="sr-only"
+                            />
+                            <span
+                              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                              style={{
+                                backgroundColor: algo!.color,
+                                boxShadow: enabledAlgorithms.has(algoId as AlgorithmType) ? `0 0 6px ${algo!.color}60` : 'none'
+                              }}
+                            />
+                            <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo!.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trajectory Plot - Center */}
               <div className="flex-1">
                 <TrajectoryPlot2D
                   func={selectedFunction2D}
@@ -335,29 +444,80 @@ function App() {
                   currentStep={runner2D.animation.currentStep}
                   enabledAlgorithms={enabledAlgorithms}
                   viewBox={viewBox2D}
+                  initialDomain={{ x: selectedFunction2D.domain.x, y: selectedFunction2D.domain.y }}
                   onPan={handlePan2D}
                   onZoom={handleZoom2D}
+                  x0={runner2D.x0}
                   isDark={isDark}
                 />
               </div>
 
-              {/* Controls Panel - Right Side */}
-              <div className="w-80 flex-shrink-0">
-                <ControlPanel2D
-                  selectedFunction={selectedFunction2D}
-                  onFunctionChange={handleFunction2DChange}
-                  x0={runner2D.x0}
-                  onX0Change={runner2D.setX0}
-                  tolerance={tolerance}
-                  onToleranceChange={setTolerance}
-                  maxIterations={maxIterations}
-                  onMaxIterationsChange={setMaxIterations}
-                  andersonMemory={andersonMemory}
-                  onAndersonMemoryChange={setAndersonMemory}
-                  enabledAlgorithms={enabledAlgorithms}
-                  onToggleAlgorithm={handleToggleAlgorithm}
-                  isDark={isDark}
-                />
+              {/* Right Panel - Parameters */}
+              <div className="w-56 flex-shrink-0">
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Parameters
+                  </h3>
+
+                  {/* Anderson Memory - Emphasized */}
+                  <div className={`p-2.5 rounded-lg border ${isDark ? 'bg-green-500/10 border-green-500/20' : 'bg-green-50 border-green-200'}`}>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                      Anderson Memory: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{andersonMemory}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={3}
+                      step={1}
+                      value={andersonMemory}
+                      onChange={(e) => setAndersonMemory(parseInt(e.target.value))}
+                      className="w-full slider"
+                    />
+                    <div className={`flex justify-between text-xs mt-1 font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                      <span>0</span>
+                      <span>3</span>
+                    </div>
+                  </div>
+
+                  {/* Tolerance */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Tolerance: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>10<sup>{Math.log10(tolerance).toFixed(0)}</sup></span>
+                    </label>
+                    <input
+                      type="range"
+                      min={-12}
+                      max={-3}
+                      step={1}
+                      value={Math.log10(tolerance)}
+                      onChange={(e) => setTolerance(Math.pow(10, parseInt(e.target.value)))}
+                      className="w-full slider"
+                    />
+                  </div>
+
+                  {/* Max Iterations */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Max Iterations: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{maxIterations}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={10}
+                      max={100}
+                      step={10}
+                      value={maxIterations}
+                      onChange={(e) => setMaxIterations(parseInt(e.target.value))}
+                      className="w-full slider"
+                    />
+                  </div>
+
+                  {/* Info text */}
+                  <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+                    {selectedFunction2D.description}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -373,7 +533,7 @@ function App() {
             </div>
 
             {/* 2D Explanation */}
-            <div className={`mt-8 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
+            <div className={`mt-8 mb-8 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
               <h3 className={`text-lg font-semibold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Why Anderson Memory Matters in 2D
               </h3>
