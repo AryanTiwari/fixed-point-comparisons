@@ -1,11 +1,11 @@
 export { GraphGrid } from './GraphGrid';
 export type { ViewBox } from './GraphGrid';
-export { AlgorithmGraph } from './AlgorithmGraph';
+export { AlgorithmGraphJSX as AlgorithmGraph } from './jsxgraph/AlgorithmGraphJSX';
 export { ControlPanel } from './ControlPanel';
 export { ControlPanel2D } from './ControlPanel2D';
 export { MetricsPanel } from './MetricsPanel';
 export { MetricsPanel2D } from './MetricsPanel2D';
 export { Formula } from './Formula';
-export { TrajectoryPlot2D } from './TrajectoryPlot2D';
-export type { ViewBox2D } from './TrajectoryPlot2D';
+export { TrajectoryPlot2DJSX as TrajectoryPlot2D } from './jsxgraph/TrajectoryPlot2DJSX';
+export type { ViewBox2D } from './jsxgraph/TrajectoryPlot2DJSX';
 export { AnimationControls } from './AnimationControls';

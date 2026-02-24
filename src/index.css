@@ -198,31 +198,59 @@ html {
   border-color: var(--border-color);
 }
 
-/* Mafs graph theme overrides */
-[data-theme="light"] .MafsView {
-  --mafs-bg: #f8fafc;
-  --mafs-fg: #334155;
-  --mafs-origin-color: #94a3b8;
-}
-
-[data-theme="light"] .MafsView text {
-  fill: #475569;
-}
-
-[data-theme="light"] .MafsView .mafs-axis line,
-[data-theme="light"] .MafsView .mafs-grid line {
-  stroke: rgba(0, 0, 0, 0.08);
-}
-
-/* Ensure Mafs SVG takes full container */
-.MafsView {
-  width: 100% !important;
-  height: 100% !important;
-}
-
 /* Optimize graph rendering for smooth zoom/pan */
-.MafsView svg {
+.jxgbox svg {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* JSXGraph styles */
+.jxgbox {
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  -ms-touch-action: none;
+  touch-action: none;
+}
+
+.jxgbox svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.JXGtext {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.JXGinfobox {
+  border-style: none;
+  border-width: 0;
+  border-color: black;
+}
+
+.jxgbox :focus {
+  outline: none;
+}
+
+/* Hide JSXGraph navigation (we use custom controls) */
+.JXG_navigation {
+  display: none;
+}
+
+/* JSXGraph theme overrides */
+[data-theme="light"] .jxgbox {
+  background-color: #f8fafc;
+}
+
+[data-theme="dark"] .jxgbox {
+  background-color: transparent;
 }

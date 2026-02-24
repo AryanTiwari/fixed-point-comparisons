@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { AlgorithmGraph } from './AlgorithmGraph';
+import { AlgorithmGraphJSX } from './jsxgraph/AlgorithmGraphJSX';
 import { ALGORITHMS } from '../algorithms/types';
 import type { ExampleFunction, AlgorithmType } from '../algorithms/types';
 import type { AlgorithmResults } from '../hooks/useIterationRunner';
@@ -146,7 +146,7 @@ export function GraphGrid({
             key={algo.id}
             className={`transition-opacity duration-300 ${isEnabled ? 'opacity-100' : 'opacity-40'}`}
           >
-            <AlgorithmGraph
+            <AlgorithmGraphJSX
               algorithm={algo}
               func={func}
               result={isEnabled ? result : null}
