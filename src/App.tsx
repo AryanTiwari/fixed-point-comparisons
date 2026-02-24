@@ -13,7 +13,7 @@ type Mode = '1d' | '2d';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
-  const [mode, setMode] = useState<Mode>('1d');
+  const [mode, setMode] = useState<Mode>('2d');
 
   // 1D State
   const [selectedFunction, setSelectedFunction] = useState<ExampleFunction>(EXAMPLE_FUNCTIONS[0]);

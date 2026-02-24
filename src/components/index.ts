@@ -1,6 +1,6 @@
 export { GraphGrid } from './GraphGrid';
 export type { ViewBox } from './GraphGrid';
-export { AlgorithmGraphJSX as AlgorithmGraph } from './jsxgraph/AlgorithmGraphJSX';
+export { AlgorithmGraphPixi as AlgorithmGraph } from './pixi/AlgorithmGraphPixi';
 export { ControlPanel } from './ControlPanel';
 export { ControlPanel2D } from './ControlPanel2D';
 export { MetricsPanel } from './MetricsPanel';
