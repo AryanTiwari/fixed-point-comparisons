@@ -254,3 +254,10 @@ html {
 [data-theme="dark"] .jxgbox {
   background-color: transparent;
 }
+
+/* Pixi.js canvas styles */
+.pixi-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}

@@ -6,6 +6,6 @@ export { ControlPanel2D } from './ControlPanel2D';
 export { MetricsPanel } from './MetricsPanel';
 export { MetricsPanel2D } from './MetricsPanel2D';
 export { Formula } from './Formula';
-export { TrajectoryPlot2DJSX as TrajectoryPlot2D } from './jsxgraph/TrajectoryPlot2DJSX';
-export type { ViewBox2D } from './jsxgraph/TrajectoryPlot2DJSX';
+export { TrajectoryPlot2DPixi as TrajectoryPlot2D } from './pixi/TrajectoryPlot2DPixi';
+export type { ViewBox2D } from './pixi/TrajectoryPlot2DPixi';
 export { AnimationControls } from './AnimationControls';

@@ -449,6 +449,7 @@ function App() {
                   onZoom={handleZoom2D}
                   x0={runner2D.x0}
                   isDark={isDark}
+                  isPlaying={runner2D.animation.isPlaying}
                 />
               </div>
 

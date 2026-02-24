@@ -31,6 +31,7 @@ interface TrajectoryPlot2DJSXProps {
   onZoom: (zoomIn: boolean, centerX: number, centerY: number) => void;
   x0: Point2D;
   isDark: boolean;
+  isPlaying?: boolean;
 }
 
 function calculateTickInterval(range: number): number {
@@ -69,7 +70,8 @@ export function TrajectoryPlot2DJSX({
   onPan,
   onZoom,
   x0,
-  isDark
+  isDark,
+  isPlaying = false
 }: TrajectoryPlot2DJSXProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<Board | null>(null);
@@ -112,7 +114,7 @@ export function TrajectoryPlot2DJSX({
       keepAspectRatio: true,
       pan: { enabled: false },
       zoom: { enabled: false, wheel: false },
-      renderer: 'svg',
+      renderer: 'canvas',
     } as BoardAttributes;
 
     const board = JSXGraph.initBoard(containerRef.current, attributes);
@@ -226,57 +228,59 @@ export function TrajectoryPlot2DJSX({
       }
     }
 
-    // Vector field
-    const gridSize = 10;
-    const domainXMin = initialDomain.x[0];
-    const domainXMax = initialDomain.x[1];
-    const domainYMin = initialDomain.y[0];
-    const domainYMax = initialDomain.y[1];
-    const domainXRange = domainXMax - domainXMin;
-    const domainYRange = domainYMax - domainYMin;
-    const xStep = domainXRange / (gridSize + 1);
-    const yStep = domainYRange / (gridSize + 1);
-    const fixedArrowLength = Math.min(domainXRange, domainYRange) / 28;
+    // Vector field (skip during animation for performance)
+    if (!isPlaying) {
+      const gridSize = 6;
+      const domainXMin = initialDomain.x[0];
+      const domainXMax = initialDomain.x[1];
+      const domainYMin = initialDomain.y[0];
+      const domainYMax = initialDomain.y[1];
+      const domainXRange = domainXMax - domainXMin;
+      const domainYRange = domainYMax - domainYMin;
+      const xStep = domainXRange / (gridSize + 1);
+      const yStep = domainYRange / (gridSize + 1);
+      const fixedArrowLength = Math.min(domainXRange, domainYRange) / 28;
 
-    const vectorColor = isDark ? 'rgba(148, 163, 184, 0.6)' : 'rgba(71, 85, 105, 0.5)';
+      const vectorColor = isDark ? 'rgba(148, 163, 184, 0.6)' : 'rgba(71, 85, 105, 0.5)';
 
-    for (let i = 1; i <= gridSize; i++) {
-      for (let j = 1; j <= gridSize; j++) {
-        const px = domainXMin + i * xStep;
-        const py = domainYMin + j * yStep;
+      for (let i = 1; i <= gridSize; i++) {
+        for (let j = 1; j <= gridSize; j++) {
+          const px = domainXMin + i * xStep;
+          const py = domainYMin + j * yStep;
 
-        // Skip if not in visible area
-        const margin = 0.5;
-        if (px < viewBox.x[0] - margin || px > viewBox.x[1] + margin ||
-            py < viewBox.y[0] - margin || py > viewBox.y[1] + margin) {
-          continue;
-        }
-
-        try {
-          const gResult = func.g([px, py]);
-          const dx = gResult[0] - px;
-          const dy = gResult[1] - py;
-
-          if (isFinite(dx) && isFinite(dy)) {
-            const mag = Math.sqrt(dx * dx + dy * dy);
-            if (mag > 0.0001) {
-              const nx = dx / mag;
-              const ny = dy / mag;
-              const tipX = px + nx * fixedArrowLength;
-              const tipY = py + ny * fixedArrowLength;
-
-              const arrow = board.create('arrow', [[px, py], [tipX, tipY]], {
-                strokeColor: vectorColor,
-                strokeWidth: 1.5,
-                fixed: true,
-                highlight: false,
-                lastArrow: { type: 2, size: 4 },
-              });
-              elementsRef.current.push(arrow);
-            }
+          // Skip if not in visible area
+          const margin = 0.5;
+          if (px < viewBox.x[0] - margin || px > viewBox.x[1] + margin ||
+              py < viewBox.y[0] - margin || py > viewBox.y[1] + margin) {
+            continue;
           }
-        } catch {
-          // Skip points where function fails
+
+          try {
+            const gResult = func.g([px, py]);
+            const dx = gResult[0] - px;
+            const dy = gResult[1] - py;
+
+            if (isFinite(dx) && isFinite(dy)) {
+              const mag = Math.sqrt(dx * dx + dy * dy);
+              if (mag > 0.0001) {
+                const nx = dx / mag;
+                const ny = dy / mag;
+                const tipX = px + nx * fixedArrowLength;
+                const tipY = py + ny * fixedArrowLength;
+
+                const arrow = board.create('arrow', [[px, py], [tipX, tipY]], {
+                  strokeColor: vectorColor,
+                  strokeWidth: 1.5,
+                  fixed: true,
+                  highlight: false,
+                  lastArrow: { type: 2, size: 4 },
+                });
+                elementsRef.current.push(arrow);
+              }
+            }
+          } catch {
+            // Skip points where function fails
+          }
         }
       }
     }
@@ -374,7 +378,7 @@ export function TrajectoryPlot2DJSX({
     });
 
     board.unsuspendUpdate();
-  }, [boundingBox, func, results, currentStep, enabledAlgos, x0, theme, tickInterval, initialDomain, isDark, viewBox, xRange, yRange]);
+  }, [boundingBox, func, results, currentStep, enabledAlgos, x0, theme, tickInterval, initialDomain, isDark, viewBox, xRange, yRange, isPlaying]);
 
   // Mouse handlers for pan
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

@@ -87,7 +87,7 @@ export function AlgorithmGraphJSX({
       keepAspectRatio: false,
       pan: { enabled: false },
       zoom: { enabled: false, wheel: false },
-      renderer: 'svg',
+      renderer: 'canvas',
     } as BoardAttributes;
 
     const board = JSXGraph.initBoard(containerRef.current, attributes);
