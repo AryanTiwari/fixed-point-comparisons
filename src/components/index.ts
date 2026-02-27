@@ -1,5 +1,6 @@
 export { GraphGrid } from './GraphGrid';
 export type { ViewBox } from './GraphGrid';
+export { UnifiedGraph1DPixi as UnifiedGraph1D } from './pixi/UnifiedGraph1DPixi';
 export { AlgorithmGraphPixi as AlgorithmGraph } from './pixi/AlgorithmGraphPixi';
 export { ControlPanel } from './ControlPanel';
 export { ControlPanel2D } from './ControlPanel2D';

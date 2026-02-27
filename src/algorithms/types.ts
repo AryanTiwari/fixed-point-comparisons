@@ -29,6 +29,7 @@ export type DerivativeFunction = (x: number) => number;
 export interface ExampleFunction {
   id: string;
   name: string;
+  latex?: string;                  // LaTeX formula for display
   description: string;
   g: FixedPointFunction;          // Fixed-point form: x = g(x)
   f: FixedPointFunction;          // Root form: f(x) = 0 (where f(x) = g(x) - x)
@@ -72,10 +73,12 @@ export interface ExampleFunction2D {
   id: string;
   name: string;
   description: string;
+  formula?: string;                  // Mathematical formula for display
   g: FixedPointFunction2D;          // Fixed-point form: x = g(x)
   jacobian?: JacobianFunction2D;    // Jacobian for Newton's method (optional)
   defaultX0: Point2D;
   fixedPoint: Point2D;              // Known solution for reference
+  secondaryFixedPoint?: Point2D;    // Optional second fixed point (for systems with multiple)
   domain: { x: [number, number]; y: [number, number] };  // Visualization domain
 }
 

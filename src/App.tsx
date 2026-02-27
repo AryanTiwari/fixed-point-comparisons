@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
-import { GraphGrid, ControlPanel, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls } from './components';
-import type { ViewBox2D } from './components';
+import { GraphGrid, ControlPanel, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls, UnifiedGraph1D } from './components';
+import type { ViewBox2D, ViewBox } from './components';
 import { useIterationRunner } from './hooks/useIterationRunner';
 import { useIterationRunner2D } from './hooks/useIterationRunner2D';
 import { EXAMPLE_FUNCTIONS } from './functions/examples';
 import { EXAMPLE_FUNCTIONS_2D } from './functions/examples2d';
 import { FORMULAS } from './constants/formulas';
 import { useTheme } from './contexts/ThemeContext';
+import { ALGORITHMS } from './algorithms/types';
 import type { AlgorithmType, ExampleFunction, ExampleFunction2D } from './algorithms/types';
 
 type Mode = '1d' | '2d';
@@ -29,6 +30,16 @@ function App() {
   const [enabledAlgorithms, setEnabledAlgorithms] = useState<Set<AlgorithmType>>(
     new Set(['fixed-point', 'anderson', 'steffensen', 'newton'])
   );
+
+  // 1D ViewBox state for pan/zoom
+  const [viewBox1D, setViewBox1D] = useState<ViewBox>(() => {
+    const [xMin, xMax] = selectedFunction.domain;
+    const padding = (xMax - xMin) * 0.1;
+    return {
+      x: [xMin - padding, xMax + padding],
+      y: [xMin - padding, xMax + padding]
+    };
+  });
 
   // 2D ViewBox state for pan/zoom
   const [viewBox2D, setViewBox2D] = useState<ViewBox2D>({
@@ -59,11 +70,43 @@ function App() {
   const handleFunctionChange = useCallback((func: ExampleFunction) => {
     setSelectedFunction(func);
     setX0(func.defaultX0);
+    const [xMin, xMax] = func.domain;
+    const padding = (xMax - xMin) * 0.1;
+    setViewBox1D({
+      x: [xMin - padding, xMax + padding],
+      y: [xMin - padding, xMax + padding]
+    });
     runner.reset();
   }, [runner]);
 
   const handleX0Change = useCallback((newX0: number) => {
     setX0(newX0);
+  }, []);
+
+  const handlePan1D = useCallback((dx: number, dy: number) => {
+    setViewBox1D(prev => ({
+      x: [prev.x[0] + dx, prev.x[1] + dx],
+      y: [prev.y[0] + dy, prev.y[1] + dy]
+    }));
+  }, []);
+
+  const handleZoom1D = useCallback((zoomIn: boolean, centerX: number, centerY: number) => {
+    setViewBox1D(prev => {
+      const xRange = prev.x[1] - prev.x[0];
+      const yRange = prev.y[1] - prev.y[0];
+      const factor = zoomIn ? 0.8 : 1.25;
+
+      const newXRange = xRange * factor;
+      const newYRange = yRange * factor;
+
+      const xRatio = (centerX - prev.x[0]) / xRange;
+      const yRatio = (centerY - prev.y[0]) / yRange;
+
+      return {
+        x: [centerX - newXRange * xRatio, centerX + newXRange * (1 - xRatio)],
+        y: [centerY - newYRange * yRatio, centerY + newYRange * (1 - yRatio)]
+      };
+    });
   }, []);
 
   // 2D Handlers
@@ -117,7 +160,7 @@ function App() {
   const currentRunner = mode === '1d' ? runner : runner2D;
 
   return (
-    <div className={`min-h-screen p-4 md:p-8 pb-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen p-4 md:p-8 pb-40 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-100 text-slate-900'}`}>
       {/* Background gradient effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-purple-500/10' : 'bg-purple-500/5'}`} />
@@ -129,11 +172,10 @@ function App() {
         <header className="mb-8 flex justify-between items-start">
           <div>
             <h1 className={`text-4xl font-bold mb-3 bg-gradient-to-r bg-clip-text text-transparent ${isDark ? 'from-white via-purple-200 to-purple-400' : 'from-slate-800 via-purple-600 to-purple-800'}`}>
-              Anderson Acceleration Visualizer
+              Fixed Point Comparisons
             </h1>
             <p className={`text-lg ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Compare fixed-point iteration methods: Standard, Anderson Acceleration,
-              Steffensen's method, and Newton-Raphson
+              Visualize Anderson Acceleration, Steffensen's method, and Newton-Raphson
             </p>
           </div>
 
@@ -196,65 +238,158 @@ function App() {
         </header>
 
         {mode === '1d' ? (
-          // 1D Mode
+          // 1D Mode - Unified layout similar to 2D
           <>
-            {/* Function Info */}
-            <div className={`mb-6 p-4 rounded-xl backdrop-blur-sm border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
-              <div className="flex flex-wrap items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Function:</span>
-                  <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>g(x) = {selectedFunction.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-purple-500 rounded"></div>
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>g(x) curve</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-gray-500 border-t border-dashed border-gray-500"></div>
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>y = x line</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Fixed point x*</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Starting point x₀</span>
+            {/* Main Content: Side panels + Graph */}
+            <div className="flex gap-6">
+              {/* Left Panel - Function Selection */}
+              <div className="w-56 flex-shrink-0">
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Function
+                  </h3>
+                  <select
+                    value={selectedFunction.id}
+                    onChange={(e) => {
+                      const func = EXAMPLE_FUNCTIONS.find(f => f.id === e.target.value);
+                      if (func) handleFunctionChange(func);
+                    }}
+                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                        : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {EXAMPLE_FUNCTIONS.map(f => (
+                      <option key={f.id} value={f.id} className={isDark ? 'bg-slate-900' : 'bg-white'}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <div className="pt-2 border-t border-white/10">
+                    <h4 className={`text-xs font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Legend
+                    </h4>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-0.5 bg-blue-500 rounded"></div>
+                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>g(x) curve</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-0.5 bg-gray-500"></div>
+                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>y = x line</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Fixed point</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
+                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Start point</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Main Content: Graphs + Controls */}
-            <div className="flex gap-6">
-              {/* 2x2 Graph Grid */}
+              {/* Unified Graph - Center */}
               <div className="flex-1">
-                <GraphGrid
+                <UnifiedGraph1D
                   func={selectedFunction}
                   results={runner.results}
                   currentStep={runner.animation.currentStep}
                   enabledAlgorithms={enabledAlgorithms}
+                  viewBox={viewBox1D}
+                  onPan={handlePan1D}
+                  onZoom={handleZoom1D}
+                  onStartPointChange={handleX0Change}
                   x0={x0}
                   isDark={isDark}
                 />
               </div>
 
-              {/* Controls Panel - Right Side */}
-              <div className="w-80 flex-shrink-0">
-                <ControlPanel
-                  selectedFunction={selectedFunction}
-                  onFunctionChange={handleFunctionChange}
-                  x0={x0}
-                  onX0Change={handleX0Change}
-                  tolerance={tolerance}
-                  onToleranceChange={setTolerance}
-                  maxIterations={maxIterations}
-                  onMaxIterationsChange={setMaxIterations}
-                  andersonMemory={andersonMemory}
-                  onAndersonMemoryChange={setAndersonMemory}
-                  enabledAlgorithms={enabledAlgorithms}
-                  onToggleAlgorithm={handleToggleAlgorithm}
-                  isDark={isDark}
-                />
+              {/* Right Panel - Parameters */}
+              <div className="w-56 flex-shrink-0">
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Parameters
+                  </h3>
+
+                  {/* Anderson Memory */}
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-sm font-medium ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                        Anderson Memory (m)
+                      </span>
+                      <span className={`text-lg font-bold ${isDark ? 'text-green-300' : 'text-green-600'}`}>
+                        {andersonMemory}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={andersonMemory}
+                      onChange={(e) => setAndersonMemory(parseInt(e.target.value))}
+                      className="slider w-full"
+                    />
+                  </div>
+
+                  {/* Starting Point */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Start x₀
+                      </span>
+                      <span className={`text-xs font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {x0.toFixed(2)}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={selectedFunction.domain[0]}
+                      max={selectedFunction.domain[1]}
+                      step="0.1"
+                      value={x0}
+                      onChange={(e) => handleX0Change(parseFloat(e.target.value))}
+                      className="slider w-full"
+                    />
+                  </div>
+
+                  {/* Algorithms */}
+                  <div>
+                    <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Algorithms <span className={`font-normal ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
+                    </span>
+                    <div className="mt-2 space-y-1.5">
+                      {ALGORITHMS.map(algo => (
+                        <label
+                          key={algo.id}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={enabledAlgorithms.has(algo.id)}
+                            onChange={() => handleToggleAlgorithm(algo.id)}
+                            className="rounded"
+                          />
+                          <div
+                            className="w-2.5 h-2.5 rounded-full"
+                            style={{ backgroundColor: algo.color }}
+                          />
+                          <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                            {algo.name}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -270,7 +405,7 @@ function App() {
             </div>
 
             {/* Algorithm Formula Cards */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="mt-8 mb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <AlgorithmCard
                 title="Fixed-Point"
                 color="#ef4444"
@@ -311,6 +446,11 @@ function App() {
                   <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>System:</span>
                   <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedFunction2D.name}</span>
                 </div>
+                {selectedFunction2D.formula && (
+                  <div className={`px-3 py-1.5 rounded-lg ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                    <Formula math={selectedFunction2D.formula} />
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                   <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Fixed point</span>
@@ -357,6 +497,9 @@ function App() {
                         </option>
                       ))}
                     </select>
+                    <p className={`mt-2 text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      {selectedFunction2D.description}
+                    </p>
                   </div>
 
                   {/* Starting Point X */}
@@ -393,7 +536,9 @@ function App() {
 
                   {/* Algorithm Selection - Compact */}
                   <div>
-                    <label className={`block text-xs mb-2 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Algorithms</label>
+                    <label className={`block text-sm mb-2 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Algorithms <span className={`font-normal text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
+                    </label>
                     <div className="space-y-1.5">
                       {['fixed-point', 'anderson', 'newton'].map(algoId => {
                         const algo = {
@@ -447,6 +592,7 @@ function App() {
                   initialDomain={{ x: selectedFunction2D.domain.x, y: selectedFunction2D.domain.y }}
                   onPan={handlePan2D}
                   onZoom={handleZoom2D}
+                  onStartPointChange={runner2D.setX0}
                   x0={runner2D.x0}
                   isDark={isDark}
                   isPlaying={runner2D.animation.isPlaying}
@@ -534,7 +680,7 @@ function App() {
             </div>
 
             {/* 2D Explanation */}
-            <div className={`mt-8 mb-8 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
+            <div className={`mt-8 mb-24 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
               <h3 className={`text-lg font-semibold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Why Anderson Memory Matters in 2D
               </h3>
