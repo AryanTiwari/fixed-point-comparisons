@@ -12,7 +12,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'cos',
     name: 'cos(x)',
-    latex: 'g(x) = \\cos(x)',
+    latex: '\\cos(x)',
     description: 'Classic fixed-point: x = cos(x). Converges slowly (linear).',
     g: (x) => Math.cos(x),
     f: (x) => Math.cos(x) - x,
@@ -24,7 +24,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'sqrt2',
     name: '(x + 2/x) / 2',
-    latex: 'g(x) = \\frac{x + \\frac{2}{x}}{2}',
+    latex: '\\frac{x + \\frac{2}{x}}{2}',
     description: 'Babylonian method for √2. Fast convergence.',
     g: (x) => (x + 2 / x) / 2,
     f: (x) => (x + 2 / x) / 2 - x,
@@ -36,7 +36,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'exp-decay',
     name: 'e⁻ˣ',
-    latex: 'g(x) = e^{-x}',
+    latex: 'e^{-x}',
     description: 'Exponential decay: x = e^(-x). Moderate convergence.',
     g: (x) => Math.exp(-x),
     f: (x) => Math.exp(-x) - x,
@@ -48,7 +48,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'sine-offset',
     name: '1 + ½sin(x)',
-    latex: 'g(x) = 1 + \\frac{1}{2}\\sin(x)',
+    latex: '1 + \\frac{1}{2}\\sin(x)',
     description: 'Oscillatory convergence: x = 1 + 0.5sin(x).',
     g: (x) => 1 + 0.5 * Math.sin(x),
     f: (x) => 1 + 0.5 * Math.sin(x) - x,
@@ -60,7 +60,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'cubic',
     name: '(x³ + 1) / 3',
-    latex: 'g(x) = \\frac{x^3 + 1}{3}',
+    latex: '\\frac{x^3 + 1}{3}',
     description: 'Cubic iteration: slower convergence near fixed point.',
     g: (x) => (x * x * x + 1) / 3,
     f: (x) => (x * x * x + 1) / 3 - x,
@@ -72,7 +72,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'log-shift',
     name: 'ln(x + 2)',
-    latex: 'g(x) = \\ln(x + 2)',
+    latex: '\\ln(x + 2)',
     description: 'Logarithmic: x = ln(x + 2). Gentle convergence.',
     g: (x) => Math.log(x + 2),
     f: (x) => Math.log(x + 2) - x,
@@ -84,7 +84,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'atan',
     name: 'arctan(x) + x/2',
-    latex: 'g(x) = \\arctan(x) + \\frac{x}{2}',
+    latex: '\\arctan(x) + \\frac{x}{2}',
     description: 'Arctangent iteration with linear term.',
     g: (x) => Math.atan(x) + x / 2,
     f: (x) => Math.atan(x) + x / 2 - x,
@@ -96,7 +96,7 @@ export const EXAMPLE_FUNCTIONS: ExampleFunction[] = [
   {
     id: 'slow-linear',
     name: '0.9x + 0.1',
-    latex: 'g(x) = 0.9x + 0.1',
+    latex: '0.9x + 0.1',
     description: 'Very slow linear convergence (|g\'| = 0.9).',
     g: (x) => 0.9 * x + 0.1,
     f: (x) => 0.9 * x + 0.1 - x,

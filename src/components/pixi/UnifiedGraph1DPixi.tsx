@@ -23,6 +23,8 @@ interface UnifiedGraph1DPixiProps {
   onPan: (dx: number, dy: number) => void;
   onZoom: (zoomIn: boolean, centerX: number, centerY: number) => void;
   onStartPointChange?: (newX0: number) => void;
+  onResetZoom?: () => void;
+  onResetStart?: () => void;
   x0: number;
   isDark: boolean;
 }
@@ -62,6 +64,8 @@ export function UnifiedGraph1DPixi({
   onPan,
   onZoom,
   onStartPointChange,
+  onResetZoom,
+  onResetStart,
   x0,
   isDark
 }: UnifiedGraph1DPixiProps) {
@@ -358,6 +362,19 @@ export function UnifiedGraph1DPixi({
     fixedPointGraphics.circle(fpx, fpy, 6);
     fixedPointGraphics.fill({ color: 0xf59e0b });
 
+    // End label for fixed point
+    const endLabelStyle = new TextStyle({ fontSize: 14, fill: '#f59e0b', fontWeight: '600' });
+    const endLabel = new Text({ text: 'End', style: endLabelStyle });
+    endLabel.x = fpx + 10;
+    endLabel.y = fpy - 10;
+
+    // Background for end label
+    const endLabelBg = new Graphics();
+    endLabelBg.roundRect(fpx + 7, fpy - 13, endLabel.width + 6, endLabel.height + 4, 4);
+    endLabelBg.fill({ color: labelBgColor, alpha: 0.95 });
+    labelsContainer.addChild(endLabelBg);
+    labelsContainer.addChild(endLabel);
+
     // Render iteration paths for each enabled algorithm
     enabledAlgos.forEach(algo => {
       const result = results[algo.id];
@@ -457,9 +474,8 @@ export function UnifiedGraph1DPixi({
         startPointGraphics.on('globalpointermove', (event) => {
           if (!isDraggingStartPoint.current || !transformRef.current) return;
           const newX = transformRef.current.toMathX(event.global.x);
-          const [domainMin, domainMax] = func.domain;
-          const clampedX = Math.max(domainMin, Math.min(domainMax, newX));
-          onStartPointChange(clampedX);
+          // No clamping - allow dragging anywhere in the visible area
+          onStartPointChange(newX);
         });
 
         startPointGraphics.on('pointerup', () => {
@@ -565,30 +581,33 @@ export function UnifiedGraph1DPixi({
       }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Iteration Methods Comparison
-            </span>
             {func.latex ? (
-              <span className={`px-2.5 py-1 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+              <span className={`px-4 py-1.5 rounded-lg whitespace-nowrap ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                 <Formula math={func.latex} />
               </span>
             ) : (
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 {func.name}
               </span>
             )}
           </div>
           {/* Legend */}
-          <div className="flex items-center gap-5 text-base">
-            {enabledAlgos.map(algo => (
-              <div key={algo.id} className="flex items-center gap-2">
+          <div className="flex items-center gap-4 text-base">
+            {ALGORITHMS.map(algo => {
+              const isEnabled = enabledAlgorithms.has(algo.id);
+              return (
                 <div
-                  className="w-3.5 h-3.5 rounded-full"
-                  style={{ backgroundColor: algo.color }}
-                />
-                <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{algo.name}</span>
-              </div>
-            ))}
+                  key={algo.id}
+                  className={`flex items-center gap-2 transition-opacity ${isEnabled ? 'opacity-100' : 'opacity-30'}`}
+                >
+                  <div
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: algo.color }}
+                  />
+                  <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{algo.name}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -621,10 +640,38 @@ export function UnifiedGraph1DPixi({
               x₀ = {x0.toFixed(2)}
             </span>
           </span>
+          <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+            Step: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentStep}</span>
+          </span>
         </div>
-        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-          Step: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentStep}</span>
-        </span>
+        <div className="flex items-center gap-2">
+          {onResetStart && (
+            <button
+              onClick={onResetStart}
+              className={`px-2 py-1 rounded text-xs transition-all ${
+                isDark
+                  ? 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30'
+                  : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+              }`}
+              title="Reset starting point"
+            >
+              Reset Start
+            </button>
+          )}
+          {onResetZoom && (
+            <button
+              onClick={onResetZoom}
+              className={`px-2 py-1 rounded text-xs transition-all ${
+                isDark
+                  ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              }`}
+              title="Reset zoom"
+            >
+              Reset Zoom
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

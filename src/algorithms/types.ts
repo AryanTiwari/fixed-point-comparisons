@@ -107,7 +107,7 @@ export const ALGORITHMS: AlgorithmInfo[] = [
   {
     id: 'steffensen',
     name: 'Steffensen',
-    color: '#3b82f6',  // blue
+    color: '#a855f7',  // purple
     description: "Steffensen's method with Aitken's Δ² acceleration"
   },
   {

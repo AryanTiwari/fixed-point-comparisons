@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { GraphGrid, ControlPanel, MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls, UnifiedGraph1D } from './components';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { MetricsPanel, MetricsPanel2D, Formula, TrajectoryPlot2D, AnimationControls, UnifiedGraph1D } from './components';
 import type { ViewBox2D, ViewBox } from './components';
 import { useIterationRunner } from './hooks/useIterationRunner';
 import { useIterationRunner2D } from './hooks/useIterationRunner2D';
@@ -11,6 +11,99 @@ import { ALGORITHMS } from './algorithms/types';
 import type { AlgorithmType, ExampleFunction, ExampleFunction2D } from './algorithms/types';
 
 type Mode = '1d' | '2d';
+
+// Custom dropdown component for function selection with LaTeX
+interface FunctionDropdownProps {
+  functions: ExampleFunction[];
+  selected: ExampleFunction;
+  onSelect: (func: ExampleFunction) => void;
+  isDark: boolean;
+}
+
+function FunctionDropdown({ functions, selected, onSelect, isDark }: FunctionDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full rounded-lg px-3 py-2.5 text-left focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer flex items-center justify-between ${
+          isDark
+            ? 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+            : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
+        }`}
+      >
+        <span className="overflow-hidden">
+          {selected.latex ? (
+            <Formula math={selected.latex} />
+          ) : (
+            <span className="text-sm">{selected.name}</span>
+          )}
+        </span>
+        <svg
+          className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className={`absolute z-50 w-full mt-1 rounded-lg border shadow-lg max-h-80 overflow-y-auto ${
+          isDark
+            ? 'bg-slate-900 border-white/10'
+            : 'bg-white border-slate-200'
+        }`}>
+          {functions.map(func => (
+            <button
+              key={func.id}
+              onClick={() => {
+                onSelect(func);
+                setIsOpen(false);
+              }}
+              className={`w-full px-3 py-2.5 text-left transition-colors flex items-center gap-2 ${
+                selected.id === func.id
+                  ? isDark
+                    ? 'bg-purple-500/20 text-purple-300'
+                    : 'bg-purple-100 text-purple-700'
+                  : isDark
+                    ? 'hover:bg-white/5 text-white'
+                    : 'hover:bg-slate-50 text-slate-900'
+              }`}
+            >
+              <div className="flex-1 overflow-hidden">
+                {func.latex ? (
+                  <Formula math={func.latex} />
+                ) : (
+                  <span className="text-sm">{func.name}</span>
+                )}
+              </div>
+              {selected.id === func.id && (
+                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -109,6 +202,19 @@ function App() {
     });
   }, []);
 
+  const handleResetZoom1D = useCallback(() => {
+    const [xMin, xMax] = selectedFunction.domain;
+    const padding = (xMax - xMin) * 0.1;
+    setViewBox1D({
+      x: [xMin - padding, xMax + padding],
+      y: [xMin - padding, xMax + padding]
+    });
+  }, [selectedFunction.domain]);
+
+  const handleResetStart1D = useCallback(() => {
+    setX0(selectedFunction.defaultX0);
+  }, [selectedFunction.defaultX0]);
+
   // 2D Handlers
   const handleFunction2DChange = useCallback((func: ExampleFunction2D) => {
     setSelectedFunction2D(func);
@@ -154,6 +260,14 @@ function App() {
     });
   }, []);
 
+  const handleResetZoom2D = useCallback(() => {
+    setViewBox2D({ x: selectedFunction2D.domain.x, y: selectedFunction2D.domain.y });
+  }, [selectedFunction2D.domain]);
+
+  const handleResetStart2D = useCallback(() => {
+    runner2D.setX0(selectedFunction2D.defaultX0);
+  }, [runner2D, selectedFunction2D.defaultX0]);
+
   const isDark = theme === 'dark';
 
   // Get current runner based on mode
@@ -182,7 +296,7 @@ function App() {
           <div className="flex items-center gap-3">
             {/* Mode Toggle */}
             <div className={`flex rounded-xl border overflow-hidden ${
-              isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200 shadow-sm'
+              isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
             }`}>
               <button
                 onClick={() => setMode('1d')}
@@ -220,7 +334,7 @@ function App() {
               className={`p-2.5 rounded-xl border transition-all duration-200 ${
                 isDark
                   ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white'
-                  : 'bg-white border-slate-200 hover:bg-slate-100 hover:border-slate-300 text-slate-700 shadow-sm'
+                  : 'bg-white/80 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 shadow-sm'
               }`}
               title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
             >
@@ -250,45 +364,33 @@ function App() {
                   <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     Function
                   </h3>
-                  <select
-                    value={selectedFunction.id}
-                    onChange={(e) => {
-                      const func = EXAMPLE_FUNCTIONS.find(f => f.id === e.target.value);
-                      if (func) handleFunctionChange(func);
-                    }}
-                    className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer ${
-                      isDark
-                        ? 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
-                        : 'bg-white border border-slate-200 text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    {EXAMPLE_FUNCTIONS.map(f => (
-                      <option key={f.id} value={f.id} className={isDark ? 'bg-slate-900' : 'bg-white'}>
-                        {f.name}
-                      </option>
-                    ))}
-                  </select>
+                  <FunctionDropdown
+                    functions={EXAMPLE_FUNCTIONS}
+                    selected={selectedFunction}
+                    onSelect={handleFunctionChange}
+                    isDark={isDark}
+                  />
 
                   <div className="pt-2 border-t border-white/10">
-                    <h4 className={`text-xs font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <h4 className={`text-sm font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       Legend
                     </h4>
-                    <div className="space-y-1.5 text-xs">
+                    <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-0.5 bg-blue-500 rounded"></div>
-                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>g(x) curve</span>
+                        <div className="w-5 h-0.5 bg-blue-500 rounded"></div>
+                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>g(x) curve</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-0.5 bg-gray-500"></div>
-                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>y = x line</span>
+                        <div className="w-5 h-0.5 bg-gray-500"></div>
+                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>y = x line</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Fixed point</span>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>Fixed point</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
-                        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Start point</span>
+                        <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>Start point</span>
                       </div>
                     </div>
                   </div>
@@ -306,6 +408,8 @@ function App() {
                   onPan={handlePan1D}
                   onZoom={handleZoom1D}
                   onStartPointChange={handleX0Change}
+                  onResetZoom={handleResetZoom1D}
+                  onResetStart={handleResetStart1D}
                   x0={x0}
                   isDark={isDark}
                 />
@@ -364,27 +468,36 @@ function App() {
                   {/* Algorithms */}
                   <div>
                     <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      Algorithms <span className={`font-normal ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
+                      Algorithms <span className={`font-normal text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
                     </span>
                     <div className="mt-2 space-y-1.5">
                       {ALGORITHMS.map(algo => (
                         <label
                           key={algo.id}
-                          className="flex items-center gap-2 cursor-pointer"
+                          className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
+                            enabledAlgorithms.has(algo.id)
+                              ? isDark
+                                ? 'bg-white/10 border-white/20'
+                                : 'bg-slate-100 border-slate-300'
+                              : isDark
+                                ? 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
+                                : 'bg-white border-slate-200 opacity-60 hover:opacity-100'
+                          }`}
                         >
                           <input
                             type="checkbox"
                             checked={enabledAlgorithms.has(algo.id)}
                             onChange={() => handleToggleAlgorithm(algo.id)}
-                            className="rounded"
+                            className="sr-only"
                           />
-                          <div
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: algo.color }}
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{
+                              backgroundColor: algo.color,
+                              boxShadow: enabledAlgorithms.has(algo.id) ? `0 0 6px ${algo.color}60` : 'none'
+                            }}
                           />
-                          <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                            {algo.name}
-                          </span>
+                          <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo.name}</span>
                         </label>
                       ))}
                     </div>
@@ -422,7 +535,7 @@ function App() {
               />
               <AlgorithmCard
                 title="Steffensen's Method"
-                color="#3b82f6"
+                color="#a855f7"
                 formula={FORMULAS['steffensen'].short || FORMULAS['steffensen'].iteration}
                 description="Aitken's delta-squared acceleration. Quadratic convergence without derivatives."
                 isDark={isDark}
@@ -593,6 +706,8 @@ function App() {
                   onPan={handlePan2D}
                   onZoom={handleZoom2D}
                   onStartPointChange={runner2D.setX0}
+                  onResetZoom={handleResetZoom2D}
+                  onResetStart={handleResetStart2D}
                   x0={runner2D.x0}
                   isDark={isDark}
                   isPlaying={runner2D.animation.isPlaying}
@@ -660,10 +775,6 @@ function App() {
                     />
                   </div>
 
-                  {/* Info text */}
-                  <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-                    {selectedFunction2D.description}
-                  </p>
                 </div>
               </div>
             </div>

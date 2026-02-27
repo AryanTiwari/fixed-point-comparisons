@@ -25,6 +25,8 @@ interface TrajectoryPlot2DPixiProps {
   onPan: (dx: number, dy: number) => void;
   onZoom: (zoomIn: boolean, centerX: number, centerY: number) => void;
   onStartPointChange?: (newX0: Point2D) => void;
+  onResetZoom?: () => void;
+  onResetStart?: () => void;
   x0: Point2D;
   isDark: boolean;
   isPlaying?: boolean;
@@ -67,6 +69,8 @@ export function TrajectoryPlot2DPixi({
   onPan,
   onZoom,
   onStartPointChange,
+  onResetZoom,
+  onResetStart,
   x0,
   isDark,
   isPlaying = false
@@ -440,10 +444,8 @@ export function TrajectoryPlot2DPixi({
         if (!isDraggingStartPoint.current || !transformRef.current) return;
         const newX = transformRef.current.toMathX(event.global.x);
         const newY = transformRef.current.toMathY(event.global.y);
-        // Clamp to domain
-        const clampedX = Math.max(initialDomain.x[0], Math.min(initialDomain.x[1], newX));
-        const clampedY = Math.max(initialDomain.y[0], Math.min(initialDomain.y[1], newY));
-        onStartPointChange([clampedX, clampedY]);
+        // No clamping - allow dragging anywhere in the visible area
+        onStartPointChange([newX, newY]);
       });
 
       startPointGraphics.on('pointerup', () => {
@@ -457,11 +459,17 @@ export function TrajectoryPlot2DPixi({
       });
     }
 
-    // Start label
+    // Start label with background
     const startLabelStyle = new TextStyle({ fontSize: 14, fill: '#06b6d4', fontWeight: '600' });
     const startLabel = new Text({ text: 'Start (drag to move)', style: startLabelStyle });
     startLabel.x = spx + 12;
     startLabel.y = spy + 5;
+
+    // Background for start label
+    const startLabelBg = new Graphics();
+    startLabelBg.roundRect(spx + 9, spy + 2, startLabel.width + 6, startLabel.height + 4, 4);
+    startLabelBg.fill({ color: labelBgColor, alpha: 0.95 });
+    labelsContainer.addChild(startLabelBg);
     labelsContainer.addChild(startLabel);
 
     // Render trajectories for each enabled algorithm
@@ -645,10 +653,38 @@ export function TrajectoryPlot2DPixi({
               ({x0[0].toFixed(2)}, {x0[1].toFixed(2)})
             </span>
           </span>
+          <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+            Step: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentStep}</span>
+          </span>
         </div>
-        <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-          Step: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentStep}</span>
-        </span>
+        <div className="flex items-center gap-2">
+          {onResetStart && (
+            <button
+              onClick={onResetStart}
+              className={`px-2 py-1 rounded text-xs transition-all ${
+                isDark
+                  ? 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30'
+                  : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'
+              }`}
+              title="Reset starting point"
+            >
+              Reset Start
+            </button>
+          )}
+          {onResetZoom && (
+            <button
+              onClick={onResetZoom}
+              className={`px-2 py-1 rounded text-xs transition-all ${
+                isDark
+                  ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              }`}
+              title="Reset zoom"
+            >
+              Reset Zoom
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

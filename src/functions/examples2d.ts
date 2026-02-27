@@ -50,7 +50,7 @@ export const EXAMPLE_FUNCTIONS_2D: ExampleFunction2D[] = [
       0.5 * Math.sin(x) + 0.5
     ],
     defaultX0: [0, 0],
-    fixedPoint: [0.8212, 0.8678],  // Numerically determined via iteration
+    fixedPoint: [0.82363, 0.86681],  // Numerically determined via iteration
     domain: { x: [-0.5, 2], y: [-0.5, 2] }
   },
   {
