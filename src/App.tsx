@@ -119,7 +119,8 @@ function App() {
   // Shared State
   const [tolerance, setTolerance] = useState(1e-8);
   const [maxIterations, setMaxIterations] = useState(100);
-  const [andersonMemory, setAndersonMemory] = useState(3);
+  const [andersonMemory1D, setAndersonMemory1D] = useState(0);
+  const [andersonMemory2D, setAndersonMemory2D] = useState(3);
   const [enabledAlgorithms, setEnabledAlgorithms] = useState<Set<AlgorithmType>>(
     new Set(['fixed-point', 'anderson', 'steffensen', 'newton'])
   );
@@ -146,7 +147,7 @@ function App() {
     x0,
     tolerance,
     maxIterations,
-    andersonMemory,
+    andersonMemory: andersonMemory1D,
     enabledAlgorithms
   });
 
@@ -155,7 +156,7 @@ function App() {
     func: selectedFunction2D,
     tolerance,
     maxIterations,
-    andersonMemory,
+    andersonMemory: andersonMemory2D,
     enabledAlgorithms
   });
 
@@ -431,15 +432,15 @@ function App() {
                         Anderson Memory (m)
                       </span>
                       <span className={`text-lg font-bold ${isDark ? 'text-green-300' : 'text-green-600'}`}>
-                        {andersonMemory}
+                        {andersonMemory1D}
                       </span>
                     </div>
                     <input
                       type="range"
-                      min="1"
-                      max="10"
-                      value={andersonMemory}
-                      onChange={(e) => setAndersonMemory(parseInt(e.target.value))}
+                      min="0"
+                      max="1"
+                      value={andersonMemory1D}
+                      onChange={(e) => setAndersonMemory1D(parseInt(e.target.value))}
                       className="slider w-full"
                     />
                   </div>
@@ -447,10 +448,10 @@ function App() {
                   {/* Starting Point */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Start x₀
+                      <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Start x₀ <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(drag on graph)</span>
                       </span>
-                      <span className={`text-xs font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <span className={`text-sm font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {x0.toFixed(2)}
                       </span>
                     </div>
@@ -723,31 +724,37 @@ function App() {
                     Parameters
                   </h3>
 
-                  {/* Anderson Memory - Emphasized */}
-                  <div className={`p-2.5 rounded-lg border ${isDark ? 'bg-green-500/10 border-green-500/20' : 'bg-green-50 border-green-200'}`}>
-                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-green-300' : 'text-green-700'}`}>
-                      Anderson Memory: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{andersonMemory}</span>
-                    </label>
+                  {/* Anderson Memory */}
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-sm font-medium ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                        Anderson Memory (m)
+                      </span>
+                      <span className={`text-lg font-bold ${isDark ? 'text-green-300' : 'text-green-600'}`}>
+                        {andersonMemory2D}
+                      </span>
+                    </div>
                     <input
                       type="range"
                       min={0}
                       max={3}
                       step={1}
-                      value={andersonMemory}
-                      onChange={(e) => setAndersonMemory(parseInt(e.target.value))}
+                      value={andersonMemory2D}
+                      onChange={(e) => setAndersonMemory2D(parseInt(e.target.value))}
                       className="w-full slider"
                     />
-                    <div className={`flex justify-between text-xs mt-1 font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                      <span>0</span>
-                      <span>3</span>
-                    </div>
                   </div>
 
                   {/* Tolerance */}
                   <div>
-                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      Tolerance: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>10<sup>{Math.log10(tolerance).toFixed(0)}</sup></span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        Tolerance
+                      </span>
+                      <span className={`text-sm font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        10<sup>{Math.log10(tolerance).toFixed(0)}</sup>
+                      </span>
+                    </div>
                     <input
                       type="range"
                       min={-12}
@@ -761,9 +768,14 @@ function App() {
 
                   {/* Max Iterations */}
                   <div>
-                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      Max Iterations: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{maxIterations}</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        Max Iterations
+                      </span>
+                      <span className={`text-sm font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {maxIterations}
+                      </span>
+                    </div>
                     <input
                       type="range"
                       min={10}

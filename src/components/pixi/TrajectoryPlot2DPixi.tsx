@@ -602,25 +602,30 @@ export function TrajectoryPlot2DPixi({
         isDark ? 'border-white/5 bg-black/20' : 'border-slate-100 bg-slate-50/50'
       }`}>
         <div className="flex items-center justify-between">
-          <div>
-            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              2D Trajectory Plot
-            </span>
-            <span className={`ml-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {func.name}
+          <div className="flex items-center gap-3">
+            <span className={`px-4 py-1.5 rounded-lg whitespace-nowrap ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+              <span className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                {func.name}
+              </span>
             </span>
           </div>
           {/* Legend */}
-          <div className="flex items-center gap-4 text-xs">
-            {enabledAlgos.map(algo => (
-              <div key={algo.id} className="flex items-center gap-1.5">
+          <div className="flex items-center gap-4 text-base">
+            {ALGORITHMS_2D.map(algo => {
+              const isEnabled = enabledAlgorithms.has(algo.id);
+              return (
                 <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: algo.color }}
-                />
-                <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{algo.name}</span>
-              </div>
-            ))}
+                  key={algo.id}
+                  className={`flex items-center gap-2 transition-opacity ${isEnabled ? 'opacity-100' : 'opacity-30'}`}
+                >
+                  <div
+                    className="w-3.5 h-3.5 rounded-full"
+                    style={{ backgroundColor: algo.color }}
+                  />
+                  <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{algo.name}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
