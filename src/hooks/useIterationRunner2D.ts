@@ -29,6 +29,7 @@ export interface UseIterationRunner2DReturn {
   stepForward: () => void;
   stepBackward: () => void;
   setSpeed: (speed: number) => void;
+  seek: (step: number) => void;
   maxSteps: number;
   x0: Point2D;
   setX0: (x0: Point2D) => void;
@@ -142,6 +143,14 @@ export function useIterationRunner2D(config: RunnerConfig2D): UseIterationRunner
     setAnimation(prev => ({ ...prev, speed }));
   }, []);
 
+  const seek = useCallback((step: number) => {
+    setAnimation(prev => ({
+      ...prev,
+      currentStep: Math.max(0, Math.min(step, maxStepsRef.current - 1)),
+      isPlaying: false
+    }));
+  }, []);
+
   // Animation loop
   useEffect(() => {
     if (!animation.isPlaying || maxSteps === 0) {
@@ -171,6 +180,7 @@ export function useIterationRunner2D(config: RunnerConfig2D): UseIterationRunner
     stepForward,
     stepBackward,
     setSpeed,
+    seek,
     maxSteps,
     x0,
     setX0

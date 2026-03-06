@@ -271,11 +271,8 @@ function App() {
 
   const isDark = theme === 'dark';
 
-  // Get current runner based on mode
-  const currentRunner = mode === '1d' ? runner : runner2D;
-
   return (
-    <div className={`min-h-screen p-4 md:p-8 pb-40 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-100 text-slate-900'}`}>
+    <div className={`min-h-screen p-4 md:p-8 transition-colors duration-300 ${isDark ? 'bg-[#0a0a0f] text-white' : 'bg-slate-100 text-slate-900'}`}>
       {/* Background gradient effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-purple-500/10' : 'bg-purple-500/5'}`} />
@@ -416,8 +413,9 @@ function App() {
                 />
               </div>
 
-              {/* Right Panel - Parameters */}
-              <div className="w-56 flex-shrink-0">
+              {/* Right Panel - Parameters & Controls */}
+              <div className="w-64 flex-shrink-0 space-y-4">
+                {/* Parameters Panel */}
                 <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
                 }`}>
@@ -504,6 +502,30 @@ function App() {
                     </div>
                   </div>
                 </div>
+
+                {/* Playback Controls Panel */}
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Playback
+                  </h3>
+                  <AnimationControls
+                    isPlaying={runner.animation.isPlaying}
+                    currentStep={runner.animation.currentStep}
+                    maxSteps={runner.maxSteps}
+                    animationSpeed={runner.animation.speed}
+                    onSpeedChange={runner.setSpeed}
+                    onRun={runner.runAll}
+                    onReset={runner.reset}
+                    onPlay={runner.play}
+                    onPause={runner.pause}
+                    onStepForward={runner.stepForward}
+                    onStepBackward={runner.stepBackward}
+                    onSeek={runner.seek}
+                    isDark={isDark}
+                  />
+                </div>
               </div>
             </div>
 
@@ -519,7 +541,7 @@ function App() {
             </div>
 
             {/* Algorithm Formula Cards */}
-            <div className="mt-8 mb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <AlgorithmCard
                 title="Fixed-Point"
                 color="#ef4444"
@@ -715,8 +737,9 @@ function App() {
                 />
               </div>
 
-              {/* Right Panel - Parameters */}
-              <div className="w-56 flex-shrink-0">
+              {/* Right Panel - Parameters & Controls */}
+              <div className="w-64 flex-shrink-0 space-y-4">
+                {/* Parameters Panel */}
                 <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
                 }`}>
@@ -786,7 +809,30 @@ function App() {
                       className="w-full slider"
                     />
                   </div>
+                </div>
 
+                {/* Playback Controls Panel */}
+                <div className={`rounded-2xl backdrop-blur-sm border p-4 ${
+                  isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+                }`}>
+                  <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Playback
+                  </h3>
+                  <AnimationControls
+                    isPlaying={runner2D.animation.isPlaying}
+                    currentStep={runner2D.animation.currentStep}
+                    maxSteps={runner2D.maxSteps}
+                    animationSpeed={runner2D.animation.speed}
+                    onSpeedChange={runner2D.setSpeed}
+                    onRun={runner2D.runAll}
+                    onReset={runner2D.reset}
+                    onPlay={runner2D.play}
+                    onPause={runner2D.pause}
+                    onStepForward={runner2D.stepForward}
+                    onStepBackward={runner2D.stepBackward}
+                    onSeek={runner2D.seek}
+                    isDark={isDark}
+                  />
                 </div>
               </div>
             </div>
@@ -803,7 +849,7 @@ function App() {
             </div>
 
             {/* 2D Explanation */}
-            <div className={`mt-8 mb-24 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
+            <div className={`mt-8 p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
               <h3 className={`text-lg font-semibold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Why Anderson Memory Matters in 2D
               </h3>
@@ -827,21 +873,6 @@ function App() {
         )}
       </div>
 
-      {/* Floating Animation Controls */}
-      <AnimationControls
-        isPlaying={currentRunner.animation.isPlaying}
-        currentStep={currentRunner.animation.currentStep}
-        maxSteps={currentRunner.maxSteps}
-        animationSpeed={currentRunner.animation.speed}
-        onSpeedChange={currentRunner.setSpeed}
-        onRun={currentRunner.runAll}
-        onReset={currentRunner.reset}
-        onPlay={currentRunner.play}
-        onPause={currentRunner.pause}
-        onStepForward={currentRunner.stepForward}
-        onStepBackward={currentRunner.stepBackward}
-        isDark={isDark}
-      />
     </div>
   );
 }

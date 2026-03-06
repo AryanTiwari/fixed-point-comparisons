@@ -34,6 +34,7 @@ export interface UseIterationRunnerReturn {
   stepForward: () => void;
   stepBackward: () => void;
   setSpeed: (speed: number) => void;
+  seek: (step: number) => void;
   maxSteps: number;
 }
 
@@ -147,6 +148,14 @@ export function useIterationRunner(config: RunnerConfig): UseIterationRunnerRetu
     setAnimation(prev => ({ ...prev, speed }));
   }, []);
 
+  const seek = useCallback((step: number) => {
+    setAnimation(prev => ({
+      ...prev,
+      currentStep: Math.max(0, Math.min(step, maxStepsRef.current - 1)),
+      isPlaying: false
+    }));
+  }, []);
+
   // Animation loop
   useEffect(() => {
     if (!animation.isPlaying || maxSteps === 0) {
@@ -177,6 +186,7 @@ export function useIterationRunner(config: RunnerConfig): UseIterationRunnerRetu
     stepForward,
     stepBackward,
     setSpeed,
+    seek,
     maxSteps
   };
 }
