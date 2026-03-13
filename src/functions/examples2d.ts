@@ -15,7 +15,7 @@ export const EXAMPLE_FUNCTIONS_2D: ExampleFunction2D[] = [
       [0.2, 0.6 - 1]
     ],
     defaultX0: [2, 2],
-    fixedPoint: [0.607, 0.679],  // Solved: (I-A)^-1 * b where A=[[0.5,0.3],[0.2,0.6]], b=[0.1,0.15]
+    fixedPoint: [17/28, 19/28],  // Solved: (I-A)^-1 * b where A=[[0.5,0.3],[0.2,0.6]], b=[0.1,0.15]
     domain: { x: [-0.5, 3], y: [-0.5, 3] }
   },
   {
@@ -77,7 +77,7 @@ export const EXAMPLE_FUNCTIONS_2D: ExampleFunction2D[] = [
       0.1 * x + 0.3 * y + 0.3     // Fast in y
     ],
     defaultX0: [3, 3],
-    fixedPoint: [0.769, 0.538],  // Solved: (I-A)^-1 * b where A=[[0.9,0.05],[0.1,0.3]], b=[0.05,0.3]
+    fixedPoint: [10/13, 7/13],  // Solved: (I-A)^-1 * b where A=[[0.9,0.05],[0.1,0.3]], b=[0.05,0.3]
     domain: { x: [-0.5, 4], y: [-0.5, 4] }
   }
 ];

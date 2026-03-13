@@ -352,44 +352,106 @@ function App() {
         {mode === '1d' ? (
           // 1D Mode - Unified layout similar to 2D
           <>
+            {/* 1D Function Info */}
+            <div className={`mb-6 p-4 rounded-xl backdrop-blur-sm border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'}`}>
+              <div className="flex flex-wrap items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Function:</span>
+                  <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedFunction.name}</span>
+                </div>
+                {selectedFunction.latex && (
+                  <div className={`px-3 py-1.5 rounded-lg ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                    <Formula math={selectedFunction.latex} />
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                    Fixed point: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedFunction.fixedPoint.toFixed(4)}</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                    Start: <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{x0.toFixed(2)}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Main Content: Side panels + Graph */}
             <div className="flex gap-6">
-              {/* Left Panel - Function Selection */}
+              {/* Left Panel - Function & Start */}
               <div className="w-56 flex-shrink-0">
                 <div className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
                 }`}>
-                  <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Function
+                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Function & Start
                   </h3>
-                  <FunctionDropdown
-                    functions={EXAMPLE_FUNCTIONS}
-                    selected={selectedFunction}
-                    onSelect={handleFunctionChange}
-                    isDark={isDark}
-                  />
 
-                  <div className="pt-2 border-t border-white/10">
-                    <h4 className={`text-sm font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Legend
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-0.5 bg-blue-500 rounded"></div>
-                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>g(x) curve</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-0.5 bg-gray-500"></div>
-                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>y = x line</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>Fixed point</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>Start point</span>
-                      </div>
+                  {/* Function Selection */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Function</label>
+                    <FunctionDropdown
+                      functions={EXAMPLE_FUNCTIONS}
+                      selected={selectedFunction}
+                      onSelect={handleFunctionChange}
+                      isDark={isDark}
+                    />
+                  </div>
+
+                  {/* Starting Point */}
+                  <div>
+                    <label className={`block text-xs mb-1.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Start x₀: <span className={`font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{x0.toFixed(2)}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={selectedFunction.domain[0]}
+                      max={selectedFunction.domain[1]}
+                      step="0.1"
+                      value={x0}
+                      onChange={(e) => handleX0Change(parseFloat(e.target.value))}
+                      className="slider w-full"
+                    />
+                  </div>
+
+                  {/* Algorithm Selection */}
+                  <div>
+                    <label className={`block text-sm mb-2 font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Algorithms <span className={`font-normal text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
+                    </label>
+                    <div className="space-y-1.5">
+                      {ALGORITHMS.map(algo => (
+                        <label
+                          key={algo.id}
+                          className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
+                            enabledAlgorithms.has(algo.id)
+                              ? isDark
+                                ? 'bg-white/10 border-white/20'
+                                : 'bg-slate-100 border-slate-300'
+                              : isDark
+                                ? 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
+                                : 'bg-white border-slate-200 opacity-60 hover:opacity-100'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={enabledAlgorithms.has(algo.id)}
+                            onChange={() => handleToggleAlgorithm(algo.id)}
+                            className="sr-only"
+                          />
+                          <span
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                            style={{
+                              backgroundColor: algo.color,
+                              boxShadow: enabledAlgorithms.has(algo.id) ? `0 0 6px ${algo.color}60` : 'none'
+                            }}
+                          />
+                          <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo.name}</span>
+                        </label>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -442,73 +504,14 @@ function App() {
                       className="slider w-full"
                     />
                   </div>
-
-                  {/* Starting Point */}
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Start x₀ <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(drag on graph)</span>
-                      </span>
-                      <span className={`text-sm font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {x0.toFixed(2)}
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min={selectedFunction.domain[0]}
-                      max={selectedFunction.domain[1]}
-                      step="0.1"
-                      value={x0}
-                      onChange={(e) => handleX0Change(parseFloat(e.target.value))}
-                      className="slider w-full"
-                    />
-                  </div>
-
-                  {/* Algorithms */}
-                  <div>
-                    <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      Algorithms <span className={`font-normal text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>(click to toggle)</span>
-                    </span>
-                    <div className="mt-2 space-y-1.5">
-                      {ALGORITHMS.map(algo => (
-                        <label
-                          key={algo.id}
-                          className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
-                            enabledAlgorithms.has(algo.id)
-                              ? isDark
-                                ? 'bg-white/10 border-white/20'
-                                : 'bg-slate-100 border-slate-300'
-                              : isDark
-                                ? 'bg-white/5 border-white/5 opacity-60 hover:opacity-100'
-                                : 'bg-white border-slate-200 opacity-60 hover:opacity-100'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={enabledAlgorithms.has(algo.id)}
-                            onChange={() => handleToggleAlgorithm(algo.id)}
-                            className="sr-only"
-                          />
-                          <span
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{
-                              backgroundColor: algo.color,
-                              boxShadow: enabledAlgorithms.has(algo.id) ? `0 0 6px ${algo.color}60` : 'none'
-                            }}
-                          />
-                          <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
                 </div>
 
-                {/* Playback Controls Panel */}
+                {/* Iterate Controls Panel */}
                 <div className={`rounded-2xl backdrop-blur-sm border p-4 ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
                 }`}>
                   <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Playback
+                    Iterate
                   </h3>
                   <AnimationControls
                     isPlaying={runner.animation.isPlaying}
@@ -811,12 +814,12 @@ function App() {
                   </div>
                 </div>
 
-                {/* Playback Controls Panel */}
+                {/* Iterate Controls Panel */}
                 <div className={`rounded-2xl backdrop-blur-sm border p-4 ${
                   isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
                 }`}>
                   <h3 className={`text-sm font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Playback
+                    Iterate
                   </h3>
                   <AnimationControls
                     isPlaying={runner2D.animation.isPlaying}
@@ -856,15 +859,15 @@ function App() {
               <div className={`text-sm leading-relaxed space-y-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <p>
                   In 1D problems, residuals are scalars, so all previous residuals are collinear - there's only one direction.
-                  Memory m=1 captures the full benefit of Anderson acceleration.
+                  Memory m = 1 captures the full benefit of Anderson acceleration.
                 </p>
                 <p>
                   In 2D (and higher dimensions), residuals are vectors that can point in different directions.
-                  With m=1, Anderson can only extrapolate along one direction. With m=2, it can combine information
+                  With m = 1, Anderson can only extrapolate along one direction. With m = 2, it can combine information
                   from two different residual directions to find a better path to the solution.
                 </p>
                 <p className={isDark ? 'text-green-400' : 'text-green-600'}>
-                  <strong>Try it:</strong> Run the "Spiral Contraction" function with m=1 vs m=2. Watch how m=2
+                  <strong>Try it:</strong> Run the "Spiral Contraction" function with m = 1 vs m = 2. Watch how m = 2
                   takes more direct paths to the fixed point by combining horizontal and vertical corrections!
                 </p>
               </div>
