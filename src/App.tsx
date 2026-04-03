@@ -815,7 +815,7 @@ function App() {
         )}
 
         {/* Footer */}
-        <footer className={`mt-12 pt-6 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+        <footer className={`mt-12 mb-20 pt-6 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
           <div className={`text-center text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             <p className="mb-1">Aryan Tiwari &middot; Sara Pollock</p>
             <p>This work was funded by The National Science Foundation DMS-2045059 (CAREER)</p>
