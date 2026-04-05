@@ -11,16 +11,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Dark theme (default) */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: rgba(255, 255, 255, 0.05);
-  --bg-tertiary: rgba(0, 0, 0, 0.2);
-  --text-primary: rgba(255, 255, 255, 0.9);
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.2);
-  --card-bg: rgba(255, 255, 255, 0.05);
+  /* Dark theme (default) - matching quadrature-visualizer */
+  --bg-primary: #111827;
+  --bg-secondary: rgba(31, 41, 55, 0.5);
+  --bg-tertiary: rgba(17, 24, 39, 0.8);
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border-color: #374151;
+  --border-hover: #4b5563;
+  --card-bg: rgba(31, 41, 55, 0.5);
   --slider-bg: rgba(255, 255, 255, 0.1);
   --slider-hover: rgba(255, 255, 255, 0.15);
   --slider-thumb: white;
@@ -28,8 +28,8 @@
   --scrollbar-thumb: rgba(255, 255, 255, 0.15);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
   --shadow-color: rgba(0, 0, 0, 0.3);
-  --gradient-from: #0a0a0f;
-  --gradient-to: #1a1a2f;
+  --gradient-from: #111827;
+  --gradient-to: #1f2937;
 
   color-scheme: dark;
   color: var(--text-primary);
@@ -37,24 +37,24 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-secondary: rgba(0, 0, 0, 0.03);
-  --bg-tertiary: rgba(0, 0, 0, 0.05);
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --border-hover: rgba(0, 0, 0, 0.2);
+  --bg-primary: #f8f9fb;
+  --bg-secondary: #f1f3f6;
+  --bg-tertiary: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border-color: #e2e5ea;
+  --border-hover: #d1d5db;
   --card-bg: rgba(255, 255, 255, 0.8);
   --slider-bg: rgba(0, 0, 0, 0.1);
   --slider-hover: rgba(0, 0, 0, 0.15);
-  --slider-thumb: #3b82f6;
+  --slider-thumb: #374151;
   --scrollbar-track: rgba(0, 0, 0, 0.05);
   --scrollbar-thumb: rgba(0, 0, 0, 0.15);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --gradient-from: #f8fafc;
-  --gradient-to: #e2e8f0;
+  --gradient-from: #f8f9fb;
+  --gradient-to: #f1f3f6;
 
   color-scheme: light;
   color: var(--text-primary);
@@ -165,7 +165,7 @@ html {
 
 /* Selection styling */
 ::selection {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(107, 114, 128, 0.3);
   color: var(--text-primary);
 }
 
@@ -248,11 +248,11 @@ html {
 
 /* JSXGraph theme overrides */
 [data-theme="light"] .jxgbox {
-  background-color: #f8fafc;
+  background-color: #f8f9fb;
 }
 
 [data-theme="dark"] .jxgbox {
-  background-color: transparent;
+  background-color: #111827;
 }
 
 /* Pixi.js canvas styles */

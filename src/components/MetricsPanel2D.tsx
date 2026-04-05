@@ -24,10 +24,10 @@ export function MetricsPanel2D({
 
   return (
     <div className={`rounded-2xl backdrop-blur-sm border p-6 space-y-5 ${
-      isDark ? 'bg-white/5 border-white/10' : 'bg-white/80 border-slate-200 shadow-sm'
+      isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white/80 border-gray-200 shadow-sm'
     }`}>
-      <h2 className={`text-lg font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-        <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <h2 className={`text-lg font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <svg className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         2D Metrics
@@ -37,14 +37,14 @@ export function MetricsPanel2D({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className={`text-left text-xs uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <tr className={`text-left text-xs uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               <th className="pb-3">Algorithm</th>
               <th className="pb-3 text-right">Iter</th>
               <th className="pb-3 text-right">Speedup</th>
               <th className="pb-3 text-right">Status</th>
             </tr>
           </thead>
-          <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
+          <tbody className={`divide-y ${isDark ? 'divide-gray-700/50' : 'divide-gray-100'}`}>
             {enabledAlgos.map(algo => {
               const result = results[algo.id];
               if (!result) {
@@ -55,12 +55,12 @@ export function MetricsPanel2D({
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: algo.color }}
                       />
-                      <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo.name}</span>
+                      <span className={isDark ? 'text-white' : 'text-gray-900'}>{algo.name}</span>
                     </td>
-                    <td className={`py-3 text-right font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>-</td>
-                    <td className={`py-3 text-right ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>-</td>
+                    <td className={`py-3 text-right font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-</td>
+                    <td className={`py-3 text-right ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-</td>
                     <td className="py-3 text-right">
-                      <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Not run</span>
+                      <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Not run</span>
                     </td>
                   </tr>
                 );
@@ -80,20 +80,20 @@ export function MetricsPanel2D({
                         boxShadow: `0 0 6px ${algo.color}50`
                       }}
                     />
-                    <span className={isDark ? 'text-white' : 'text-slate-900'}>{algo.name}</span>
+                    <span className={isDark ? 'text-white' : 'text-gray-900'}>{algo.name}</span>
                   </td>
-                  <td className={`py-3 text-right font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <td className={`py-3 text-right font-mono ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {result.totalIterations}
                   </td>
                   <td className="py-3 text-right font-mono text-xs">
                     {algo.id === 'fixed-point' ? (
-                      <span className={isDark ? 'text-slate-500' : 'text-slate-400'}>baseline</span>
+                      <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>baseline</span>
                     ) : speedup > 0 ? (
                       <span className="text-green-500 bg-green-500/10 px-2 py-0.5 rounded">+{speedup.toFixed(0)}%</span>
                     ) : speedup < 0 ? (
                       <span className="text-red-500 bg-red-500/10 px-2 py-0.5 rounded">{speedup.toFixed(0)}%</span>
                     ) : (
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>0%</span>
+                      <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>0%</span>
                     )}
                   </td>
                   <td className="py-3 text-right">
@@ -117,13 +117,13 @@ export function MetricsPanel2D({
 
       {/* Current Step Details */}
       <div className="pt-2">
-        <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+        <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
           <span>Current Position</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+          <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-gray-700 text-gray-400' : 'bg-slate-100 text-gray-500'}`}>
             Step {currentStep + 1}
           </span>
         </h3>
-        <div className={`space-y-2 text-sm font-mono rounded-lg p-3 ${isDark ? 'bg-black/20' : 'bg-slate-50'}`}>
+        <div className={`space-y-2 text-sm font-mono rounded-lg p-3 ${isDark ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
           {enabledAlgos.map(algo => {
             const result = results[algo.id];
             const step = result?.steps[Math.min(currentStep, (result?.steps.length ?? 1) - 1)];
@@ -135,18 +135,18 @@ export function MetricsPanel2D({
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: algo.color }}
                   />
-                  <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{algo.name}</span>
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{algo.name}</span>
                 </span>
-                <span className={isDark ? 'text-white' : 'text-slate-900'}>
+                <span className={isDark ? 'text-white' : 'text-gray-900'}>
                   {step ? `(${step.x[0].toFixed(4)}, ${step.x[1].toFixed(4)})` : '-'}
                 </span>
               </div>
             );
           })}
-          <div className={`flex justify-between items-center pt-2 mt-2 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+          <div className={`flex justify-between items-center pt-2 mt-2 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-yellow-400" />
-              <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Fixed Point</span>
+              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Fixed Point</span>
             </span>
             <span className="text-yellow-500">({fixedPoint[0].toFixed(4)}, {fixedPoint[1].toFixed(4)})</span>
           </div>
@@ -180,11 +180,11 @@ function ResidualChart2D({ results, enabledAlgorithms, currentStep, isDark }: Re
 
   if (maxIter === 0) {
     return (
-      <div className={`rounded-lg p-6 text-center ${isDark ? 'bg-black/20' : 'bg-slate-50'}`}>
-        <svg className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-slate-600' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className={`rounded-lg p-6 text-center ${isDark ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+        <svg className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-gray-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
         </svg>
-        <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Run algorithms to see residual convergence</p>
+        <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>Run algorithms to see residual convergence</p>
       </div>
     );
   }
@@ -236,15 +236,15 @@ function ResidualChart2D({ results, enabledAlgorithms, currentStep, isDark }: Re
     xTicks.push(maxIter - 1);
   }
 
-  const textColor = isDark ? '#94a3b8' : '#64748b';
-  const gridColor = isDark ? '#ffffff10' : '#00000010';
-  const axisColor = isDark ? '#ffffff20' : '#00000020';
+  const textColor = isDark ? '#9ca3af' : '#6b7280';
+  const gridColor = isDark ? '#37415120' : '#00000010';
+  const axisColor = isDark ? '#37415140' : '#00000020';
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-          Residual Convergence <span className={isDark ? 'text-slate-500' : 'text-slate-400'}>(log scale)</span>
+        <h3 className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          Residual Convergence <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>(log scale)</span>
         </h3>
         <div className="flex flex-wrap gap-3">
           {enabledAlgos.map(algo => (
@@ -253,7 +253,7 @@ function ResidualChart2D({ results, enabledAlgorithms, currentStep, isDark }: Re
                 className="w-3 h-0.5 rounded"
                 style={{ backgroundColor: algo.color }}
               />
-              <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 {algo.name}
               </span>
             </div>
@@ -262,7 +262,7 @@ function ResidualChart2D({ results, enabledAlgorithms, currentStep, isDark }: Re
       </div>
       <svg
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-        className={`w-full rounded-lg ${isDark ? 'bg-black/20' : 'bg-slate-50'}`}
+        className={`w-full rounded-lg ${isDark ? 'bg-gray-900/50' : 'bg-gray-50'}`}
         style={{ minHeight: '200px', maxHeight: '280px' }}
       >
         <text

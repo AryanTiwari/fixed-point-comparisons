@@ -58,10 +58,10 @@ function FunctionDropdown({
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full rounded-lg px-3 py-2.5 text-left focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer flex items-center justify-between ${
+        className={`w-full rounded-lg px-3 py-2.5 text-left focus:outline-none focus:ring-2 focus:ring-gray-500/50 transition-all cursor-pointer flex items-center justify-between ${
           isDark
-            ? "bg-white/5 border border-white/10 text-white hover:bg-white/10"
-            : "bg-white border border-slate-200 text-slate-900 hover:bg-slate-50"
+            ? "bg-gray-800/50 border border-gray-700 text-white hover:bg-gray-700"
+            : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
         }`}
       >
         <span className="overflow-hidden">
@@ -90,8 +90,8 @@ function FunctionDropdown({
         <div
           className={`absolute z-50 w-full mt-1 rounded-lg border shadow-lg max-h-80 overflow-y-auto ${
             isDark
-              ? "bg-slate-900 border-white/10"
-              : "bg-white border-slate-200"
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200"
           }`}
         >
           {functions.map((func) => (
@@ -104,11 +104,11 @@ function FunctionDropdown({
               className={`w-full px-3 py-2.5 text-left transition-colors flex items-center gap-2 ${
                 selected.id === func.id
                   ? isDark
-                    ? "bg-purple-500/20 text-purple-300"
-                    : "bg-purple-100 text-purple-700"
+                    ? "bg-gray-700 text-white"
+                    : "bg-gray-100 text-gray-900"
                   : isDark
-                    ? "hover:bg-white/5 text-white"
-                    : "hover:bg-slate-50 text-slate-900"
+                    ? "hover:bg-gray-700/50 text-white"
+                    : "hover:bg-gray-50 text-gray-900"
               }`}
             >
               <div className="flex-1 overflow-hidden">
@@ -327,29 +327,20 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen p-4 md:p-8 pb-40 transition-colors duration-300 ${isDark ? "bg-[#0a0a0f] text-white" : "bg-slate-100 text-slate-900"}`}
+      className={`min-h-screen p-4 md:p-8 pb-40 transition-colors duration-300 ${isDark ? "bg-gray-900 text-white" : "bg-[#f8f9fb] text-gray-900"}`}
     >
-      {/* Background gradient effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div
-          className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl ${isDark ? "bg-purple-500/10" : "bg-purple-500/5"}`}
-        />
-        <div
-          className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl ${isDark ? "bg-blue-500/10" : "bg-blue-500/5"}`}
-        />
-      </div>
 
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8 flex justify-between items-start">
           <div>
             <h1
-              className={`text-4xl font-bold mb-3 bg-gradient-to-r bg-clip-text text-transparent ${isDark ? "from-white via-purple-200 to-purple-400" : "from-slate-800 via-purple-600 to-purple-800"}`}
+              className={`text-4xl font-bold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}
             >
               Fixed Point Comparisons
             </h1>
             <p
-              className={`text-lg ${isDark ? "text-slate-400" : "text-slate-600"}`}
+              className={`text-lg ${isDark ? "text-gray-400" : "text-gray-500"}`}
             >
               Visualize Anderson Acceleration, Steffensen's method, and
               Newton-Raphson
@@ -361,8 +352,8 @@ function App() {
             <div
               className={`flex rounded-xl border overflow-hidden ${
                 isDark
-                  ? "bg-white/5 border-white/10"
-                  : "bg-white/80 border-slate-200 shadow-sm"
+                  ? "bg-gray-800/50 border-gray-700"
+                  : "bg-white/80 border-gray-200 shadow-sm"
               }`}
             >
               <button
@@ -370,11 +361,11 @@ function App() {
                 className={`px-4 py-2 text-sm font-medium transition-all ${
                   mode === "1d"
                     ? isDark
-                      ? "bg-purple-500/20 text-purple-300"
-                      : "bg-purple-100 text-purple-700"
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-100 text-gray-900"
                     : isDark
-                      ? "text-slate-400 hover:text-white hover:bg-white/5"
-                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                      ? "text-gray-400 hover:text-white hover:bg-gray-700/50"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 1D Functions
@@ -384,11 +375,11 @@ function App() {
                 className={`px-4 py-2 text-sm font-medium transition-all ${
                   mode === "2d"
                     ? isDark
-                      ? "bg-purple-500/20 text-purple-300"
-                      : "bg-purple-100 text-purple-700"
+                      ? "bg-gray-700 text-white"
+                      : "bg-gray-100 text-gray-900"
                     : isDark
-                      ? "text-slate-400 hover:text-white hover:bg-white/5"
-                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                      ? "text-gray-400 hover:text-white hover:bg-gray-700/50"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 2D Systems
@@ -400,8 +391,8 @@ function App() {
               onClick={toggleTheme}
               className={`p-2.5 rounded-xl border transition-all duration-200 ${
                 isDark
-                  ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white"
-                  : "bg-white/80 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 shadow-sm"
+                  ? "bg-gray-800/50 border-gray-700 hover:bg-gray-700 hover:border-gray-600 text-white"
+                  : "bg-white/80 border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700 shadow-sm"
               }`}
               title={`Switch to ${isDark ? "light" : "dark"} mode`}
             >
@@ -448,12 +439,12 @@ function App() {
                 <div
                   className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                     isDark
-                      ? "bg-white/5 border-white/10"
-                      : "bg-white/80 border-slate-200 shadow-sm"
+                      ? "bg-gray-800/50 border-gray-700"
+                      : "bg-white/80 border-gray-200 shadow-sm"
                   }`}
                 >
                   <h3
-                    className={`text-sm font-semibold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}
+                    className={`text-sm font-semibold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     Function
                   </h3>
@@ -464,9 +455,9 @@ function App() {
                     isDark={isDark}
                   />
 
-                  <div className="pt-2 border-t border-white/10">
+                  <div className={`pt-2 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
                     <h4
-                      className={`text-sm font-medium mb-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+                      className={`text-sm font-medium mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}
                     >
                       Legend
                     </h4>
@@ -475,7 +466,7 @@ function App() {
                         <div className="w-5 h-0.5 bg-blue-500 rounded"></div>
                         <span
                           className={
-                            isDark ? "text-slate-300" : "text-slate-600"
+                            isDark ? "text-gray-300" : "text-gray-600"
                           }
                         >
                           g(x) curve
@@ -485,7 +476,7 @@ function App() {
                         <div className="w-5 h-0.5 bg-gray-500"></div>
                         <span
                           className={
-                            isDark ? "text-slate-300" : "text-slate-600"
+                            isDark ? "text-gray-300" : "text-gray-600"
                           }
                         >
                           y = x line
@@ -495,7 +486,7 @@ function App() {
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                         <span
                           className={
-                            isDark ? "text-slate-300" : "text-slate-600"
+                            isDark ? "text-gray-300" : "text-gray-600"
                           }
                         >
                           Fixed point
@@ -505,7 +496,7 @@ function App() {
                         <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
                         <span
                           className={
-                            isDark ? "text-slate-300" : "text-slate-600"
+                            isDark ? "text-gray-300" : "text-gray-600"
                           }
                         >
                           Start point
@@ -539,12 +530,12 @@ function App() {
                 <div
                   className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                     isDark
-                      ? "bg-white/5 border-white/10"
-                      : "bg-white/80 border-slate-200 shadow-sm"
+                      ? "bg-gray-800/50 border-gray-700"
+                      : "bg-white/80 border-gray-200 shadow-sm"
                   }`}
                 >
                   <h3
-                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
+                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     Parameters
                   </h3>
@@ -581,12 +572,12 @@ function App() {
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <span
-                        className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}
+                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}
                       >
                         Start x₀
                       </span>
                       <span
-                        className={`text-xs font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`text-xs font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         {x0.toFixed(2)}
                       </span>
@@ -607,11 +598,11 @@ function App() {
                   {/* Algorithms */}
                   <div>
                     <span
-                      className={`text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Algorithms{" "}
                       <span
-                        className={`font-normal text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}
+                        className={`font-normal text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}
                       >
                         (click to toggle)
                       </span>
@@ -623,11 +614,11 @@ function App() {
                           className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
                             enabledAlgorithms.has(algo.id)
                               ? isDark
-                                ? "bg-white/10 border-white/20"
-                                : "bg-slate-100 border-slate-300"
+                                ? "bg-gray-700/50 border-gray-600"
+                                : "bg-gray-100 border-gray-300"
                               : isDark
-                                ? "bg-white/5 border-white/5 opacity-60 hover:opacity-100"
-                                : "bg-white border-slate-200 opacity-60 hover:opacity-100"
+                                ? "bg-gray-800/30 border-gray-700/50 opacity-60 hover:opacity-100"
+                                : "bg-white border-gray-200 opacity-60 hover:opacity-100"
                           }`}
                         >
                           <input
@@ -646,7 +637,7 @@ function App() {
                             }}
                           />
                           <span
-                            className={isDark ? "text-white" : "text-slate-900"}
+                            className={isDark ? "text-white" : "text-gray-900"}
                           >
                             {algo.name}
                           </span>
@@ -709,24 +700,24 @@ function App() {
           <>
             {/* 2D Function Info */}
             <div
-              className={`mb-6 p-4 rounded-xl backdrop-blur-sm border ${isDark ? "bg-white/5 border-white/10" : "bg-white/80 border-slate-200 shadow-sm"}`}
+              className={`mb-6 p-4 rounded-xl backdrop-blur-sm border ${isDark ? "bg-gray-800/50 border-gray-700" : "bg-white/80 border-gray-200 shadow-sm"}`}
             >
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <span
-                    className={isDark ? "text-slate-400" : "text-slate-500"}
+                    className={isDark ? "text-gray-400" : "text-gray-500"}
                   >
                     System:
                   </span>
                   <span
-                    className={`font-medium ${isDark ? "text-white" : "text-slate-900"}`}
+                    className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     {selectedFunction2D.name}
                   </span>
                 </div>
                 {selectedFunction2D.formula && (
                   <div
-                    className={`px-3 py-1.5 rounded-lg ${isDark ? "bg-purple-500/20" : "bg-purple-100"}`}
+                    className={`px-3 py-1.5 rounded-lg ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
                   >
                     <Formula math={selectedFunction2D.formula} />
                   </div>
@@ -734,7 +725,7 @@ function App() {
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                   <span
-                    className={isDark ? "text-slate-400" : "text-slate-500"}
+                    className={isDark ? "text-gray-400" : "text-gray-500"}
                   >
                     Fixed point
                   </span>
@@ -742,7 +733,7 @@ function App() {
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
                   <span
-                    className={isDark ? "text-slate-400" : "text-slate-500"}
+                    className={isDark ? "text-gray-400" : "text-gray-500"}
                   >
                     Starting point
                   </span>
@@ -762,12 +753,12 @@ function App() {
                 <div
                   className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                     isDark
-                      ? "bg-white/5 border-white/10"
-                      : "bg-white/80 border-slate-200 shadow-sm"
+                      ? "bg-gray-800/50 border-gray-700"
+                      : "bg-white/80 border-gray-200 shadow-sm"
                   }`}
                 >
                   <h3
-                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
+                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     Function & Start
                   </h3>
@@ -775,7 +766,7 @@ function App() {
                   {/* Function Selection */}
                   <div>
                     <label
-                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Function
                     </label>
@@ -787,24 +778,24 @@ function App() {
                         );
                         if (func) handleFunction2DChange(func);
                       }}
-                      className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all cursor-pointer ${
+                      className={`w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500/50 transition-all cursor-pointer ${
                         isDark
-                          ? "bg-white/5 border border-white/10 text-white hover:bg-white/10"
-                          : "bg-white border border-slate-200 text-slate-900 hover:bg-slate-50"
+                          ? "bg-gray-800/50 border border-gray-700 text-white hover:bg-gray-700"
+                          : "bg-white border border-gray-200 text-gray-900 hover:bg-gray-50"
                       }`}
                     >
                       {EXAMPLE_FUNCTIONS_2D.map((f) => (
                         <option
                           key={f.id}
                           value={f.id}
-                          className={isDark ? "bg-slate-900" : "bg-white"}
+                          className={isDark ? "bg-gray-800" : "bg-white"}
                         >
                           {f.name}
                         </option>
                       ))}
                     </select>
                     <p
-                      className={`mt-2 text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}
+                      className={`mt-2 text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
                     >
                       {selectedFunction2D.description}
                     </p>
@@ -813,11 +804,11 @@ function App() {
                   {/* Starting Point X */}
                   <div>
                     <label
-                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Start X:{" "}
                       <span
-                        className={`font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         {runner2D.x0[0].toFixed(2)}
                       </span>
@@ -841,11 +832,11 @@ function App() {
                   {/* Starting Point Y */}
                   <div>
                     <label
-                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Start Y:{" "}
                       <span
-                        className={`font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         {runner2D.x0[1].toFixed(2)}
                       </span>
@@ -869,11 +860,11 @@ function App() {
                   {/* Algorithm Selection - Compact */}
                   <div>
                     <label
-                      className={`block text-sm mb-2 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-sm mb-2 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Algorithms{" "}
                       <span
-                        className={`font-normal text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}
+                        className={`font-normal text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}
                       >
                         (click to toggle)
                       </span>
@@ -894,11 +885,11 @@ function App() {
                             className={`flex items-center gap-2 cursor-pointer p-2 rounded-lg border transition-all text-xs ${
                               enabledAlgorithms.has(algoId as AlgorithmType)
                                 ? isDark
-                                  ? "bg-white/10 border-white/20"
-                                  : "bg-slate-100 border-slate-300"
+                                  ? "bg-gray-700/50 border-gray-600"
+                                  : "bg-gray-100 border-gray-300"
                                 : isDark
-                                  ? "bg-white/5 border-white/5 opacity-60 hover:opacity-100"
-                                  : "bg-white border-slate-200 opacity-60 hover:opacity-100"
+                                  ? "bg-gray-800/30 border-gray-700/50 opacity-60 hover:opacity-100"
+                                  : "bg-white border-gray-200 opacity-60 hover:opacity-100"
                             }`}
                           >
                             <input
@@ -924,7 +915,7 @@ function App() {
                             />
                             <span
                               className={
-                                isDark ? "text-white" : "text-slate-900"
+                                isDark ? "text-white" : "text-gray-900"
                               }
                             >
                               {algo!.name}
@@ -965,12 +956,12 @@ function App() {
                 <div
                   className={`rounded-2xl backdrop-blur-sm border p-4 space-y-4 ${
                     isDark
-                      ? "bg-white/5 border-white/10"
-                      : "bg-white/80 border-slate-200 shadow-sm"
+                      ? "bg-gray-800/50 border-gray-700"
+                      : "bg-white/80 border-gray-200 shadow-sm"
                   }`}
                 >
                   <h3
-                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
+                    className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     Parameters
                   </h3>
@@ -984,7 +975,7 @@ function App() {
                     >
                       Anderson Memory:{" "}
                       <span
-                        className={`font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         {andersonMemory}
                       </span>
@@ -1001,7 +992,7 @@ function App() {
                       className="w-full slider"
                     />
                     <div
-                      className={`flex justify-between text-xs mt-1 font-mono ${isDark ? "text-slate-500" : "text-slate-400"}`}
+                      className={`flex justify-between text-xs mt-1 font-mono ${isDark ? "text-gray-500" : "text-gray-400"}`}
                     >
                       <span>0</span>
                       <span>3</span>
@@ -1011,11 +1002,11 @@ function App() {
                   {/* Tolerance */}
                   <div>
                     <label
-                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Tolerance:{" "}
                       <span
-                        className={`font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         10<sup>{Math.log10(tolerance).toFixed(0)}</sup>
                       </span>
@@ -1036,11 +1027,11 @@ function App() {
                   {/* Max Iterations */}
                   <div>
                     <label
-                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      className={`block text-xs mb-1.5 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}
                     >
                       Max Iterations:{" "}
                       <span
-                        className={`font-mono ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-mono ${isDark ? "text-white" : "text-gray-900"}`}
                       >
                         {maxIterations}
                       </span>
@@ -1074,15 +1065,15 @@ function App() {
 
             {/* 2D Explanation */}
             <div
-              className={`mt-8 mb-12 p-6 rounded-2xl border ${isDark ? "bg-white/5 border-white/10" : "bg-white/80 border-slate-200 shadow-sm"}`}
+              className={`mt-8 mb-12 p-6 rounded-2xl border ${isDark ? "bg-gray-800/50 border-gray-700" : "bg-white/80 border-gray-200 shadow-sm"}`}
             >
               <h3
-                className={`text-lg font-semibold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}
+                className={`text-lg font-semibold mb-3 ${isDark ? "text-white" : "text-gray-900"}`}
               >
                 Why Anderson Memory Matters in 2D
               </h3>
               <div
-                className={`text-sm leading-relaxed space-y-3 ${isDark ? "text-slate-400" : "text-slate-600"}`}
+                className={`text-sm leading-relaxed space-y-3 ${isDark ? "text-gray-400" : "text-gray-600"}`}
               >
                 <p>
                   In 1D problems, residuals are scalars, so all previous
@@ -1108,10 +1099,10 @@ function App() {
 
         {/* Footer */}
         <footer
-          className={`mb-20 pt-6 border-t ${isDark ? "border-white/10" : "border-slate-200"}`}
+          className={`mb-20 pt-6 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
         >
           <div
-            className={`text-center text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}
+            className={`text-center text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
           >
             <p className="mb-1">Aryan Tiwari &middot; Sara Pollock</p>
             <p>
@@ -1160,8 +1151,8 @@ function AlgorithmCard({
     <div
       className={`group relative rounded-xl overflow-hidden backdrop-blur-sm border p-5 transition-all duration-300 ${
         isDark
-          ? "bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20"
-          : "bg-white/80 border-slate-200 hover:bg-white hover:border-slate-300 shadow-sm"
+          ? "bg-gray-800/50 border-gray-700 hover:bg-gray-800 hover:border-gray-600"
+          : "bg-white/80 border-gray-200 hover:bg-white hover:border-gray-300 shadow-sm"
       }`}
     >
       {/* Subtle glow on hover */}
@@ -1182,7 +1173,7 @@ function AlgorithmCard({
             }}
           />
           <h3
-            className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
+            className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
           >
             {title}
           </h3>
@@ -1190,13 +1181,13 @@ function AlgorithmCard({
 
         {/* LaTeX Formula */}
         <div
-          className={`rounded-lg p-3 mb-3 overflow-x-auto ${isDark ? "bg-black/30" : "bg-slate-100"}`}
+          className={`rounded-lg p-3 mb-3 overflow-x-auto ${isDark ? "bg-gray-900/50" : "bg-gray-100"}`}
         >
           <Formula math={formula} />
         </div>
 
         <p
-          className={`text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}
+          className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
         >
           {description}
         </p>

@@ -34,9 +34,9 @@ export function AnimationControls({
     <div className="fixed bottom-0 left-0 right-0 z-50">
       {/* Progress bar */}
       {hasResults && (
-        <div className={`h-1 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
+        <div className={`h-1 ${isDark ? 'bg-gray-800' : 'bg-gray-200'}`}>
           <div
-            className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-150"
+            className="h-full bg-gradient-to-r from-gray-500 to-gray-400 transition-all duration-150"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -45,8 +45,8 @@ export function AnimationControls({
       {/* Controls bar */}
       <div className={`backdrop-blur-xl border-t ${
         isDark
-          ? 'bg-slate-900/90 border-white/10'
-          : 'bg-white/90 border-slate-200'
+          ? 'bg-gray-900/90 border-gray-700'
+          : 'bg-white/90 border-gray-200'
       }`}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
@@ -65,8 +65,8 @@ export function AnimationControls({
                 onClick={onReset}
                 className={`font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2 ${
                   isDark
-                    ? 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white'
-                    : 'bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 shadow-sm'
+                    ? 'bg-gray-800/50 border border-gray-700 hover:bg-gray-700 hover:border-gray-600 text-white'
+                    : 'bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700 shadow-sm'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,8 +84,8 @@ export function AnimationControls({
                 disabled={!hasResults || currentStep === 0}
                 className={`p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                   isDark
-                    ? 'hover:bg-white/10 text-white'
-                    : 'hover:bg-slate-100 text-slate-700'
+                    ? 'hover:bg-gray-700 text-white'
+                    : 'hover:bg-gray-100 text-gray-700'
                 }`}
                 title="Previous step"
               >
@@ -98,7 +98,7 @@ export function AnimationControls({
               <button
                 onClick={isPlaying ? onPause : onPlay}
                 disabled={!hasResults || (currentStep >= maxSteps - 1 && !isPlaying)}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-medium p-3 rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center"
+                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 disabled:opacity-30 disabled:cursor-not-allowed text-white font-medium p-3 rounded-full shadow-lg shadow-gray-500/25 transition-all flex items-center justify-center"
                 title={isPlaying ? 'Pause' : 'Play'}
               >
                 {isPlaying ? (
@@ -118,8 +118,8 @@ export function AnimationControls({
                 disabled={!hasResults || currentStep >= maxSteps - 1}
                 className={`p-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                   isDark
-                    ? 'hover:bg-white/10 text-white'
-                    : 'hover:bg-slate-100 text-slate-700'
+                    ? 'hover:bg-gray-700 text-white'
+                    : 'hover:bg-gray-100 text-gray-700'
                 }`}
                 title="Next step"
               >
@@ -131,10 +131,10 @@ export function AnimationControls({
               {/* Step counter */}
               {hasResults && (
                 <div className={`ml-2 px-3 py-1.5 rounded-lg font-mono text-sm ${
-                  isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-700'
+                  isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700'
                 }`}>
-                  <span className="text-purple-500 font-semibold">{currentStep + 1}</span>
-                  <span className={isDark ? 'text-slate-500' : 'text-slate-400'}> / {maxSteps}</span>
+                  <span className="text-gray-900 dark:text-white font-semibold">{currentStep + 1}</span>
+                  <span className={isDark ? 'text-gray-500' : 'text-gray-400'}> / {maxSteps}</span>
                 </div>
               )}
             </div>
@@ -142,7 +142,7 @@ export function AnimationControls({
             {/* Right: Speed control */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <svg className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 <input
@@ -155,7 +155,7 @@ export function AnimationControls({
                   className="w-24 slider"
                   title={`Animation speed: ${animationSpeed}ms`}
                 />
-                <span className={`text-xs font-mono w-14 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <span className={`text-xs font-mono w-14 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   {animationSpeed}ms
                 </span>
               </div>
