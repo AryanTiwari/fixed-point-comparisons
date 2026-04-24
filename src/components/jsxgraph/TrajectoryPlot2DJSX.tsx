@@ -349,10 +349,21 @@ export function TrajectoryPlot2DJSX({
         if (!isFinite(px) || !isFinite(py)) return;
 
         const nextStep = stepsToShow[i + 1];
+        const isLast = i === stepsToShow.length - 1;
 
         // Line to next point
         if (nextStep && isFinite(nextStep.x[0]) && isFinite(nextStep.x[1])) {
           const line = board.create('segment', [[px, py], [nextStep.x[0], nextStep.x[1]]], {
+            strokeColor: algo.color,
+            strokeWidth: 2,
+            fixed: true,
+            highlight: false,
+            opacity: 0.7,
+          });
+          elementsRef.current.push(line);
+        } else if (isLast && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          // Only draw the final segment to gx when showing the LAST step of the full iteration
+          const line = board.create('segment', [[px, py], [step.gx[0], step.gx[1]]], {
             strokeColor: algo.color,
             strokeWidth: 2,
             fixed: true,
@@ -370,10 +381,25 @@ export function TrajectoryPlot2DJSX({
           fixed: true,
           highlight: false,
           withLabel: false,
-          fillOpacity: i === stepsToShow.length - 1 ? 1 : 0.5,
-          strokeOpacity: i === stepsToShow.length - 1 ? 1 : 0.5,
+          fillOpacity: isLast ? 1 : 0.5,
+          strokeOpacity: isLast ? 1 : 0.5,
         });
         elementsRef.current.push(point);
+
+        // Only draw the final gx point when showing the LAST step of the full iteration
+        if (isLast && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          const gxPoint = board.create('point', [step.gx[0], step.gx[1]], {
+            size: 3,
+            fillColor: algo.color,
+            strokeColor: algo.color,
+            fixed: true,
+            highlight: false,
+            withLabel: false,
+            fillOpacity: 1,
+            strokeOpacity: 1,
+          });
+          elementsRef.current.push(gxPoint);
+        }
       });
     });
 

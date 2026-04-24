@@ -503,6 +503,15 @@ export function TrajectoryPlot2DPixi({
 
           trajectoryGraphics.moveTo(sx1, sy1);
           trajectoryGraphics.lineTo(sx2, sy2);
+        } else if (!nextStep && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          // Only draw the final segment to gx when showing the LAST step of the full iteration
+          const sx1 = toScreenX(px);
+          const sy1 = toScreenY(py);
+          const sx2 = toScreenX(step.gx[0]);
+          const sy2 = toScreenY(step.gx[1]);
+
+          trajectoryGraphics.moveTo(sx1, sy1);
+          trajectoryGraphics.lineTo(sx2, sy2);
         }
       });
 
@@ -521,6 +530,14 @@ export function TrajectoryPlot2DPixi({
 
         algoPointsGraphics.circle(sx, sy, 4);
         algoPointsGraphics.fill({ color: algoColor, alpha: isLast ? 1 : 0.5 });
+
+        // Only draw the final gx point when showing the LAST step of the full iteration
+        if (isLast && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          const gxSx = toScreenX(step.gx[0]);
+          const gxSy = toScreenY(step.gx[1]);
+          algoPointsGraphics.circle(gxSx, gxSy, 4);
+          algoPointsGraphics.fill({ color: algoColor, alpha: 1 });
+        }
       });
     });
 
@@ -602,30 +619,25 @@ export function TrajectoryPlot2DPixi({
         isDark ? 'border-white/5 bg-black/20' : 'border-slate-100 bg-slate-50/50'
       }`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className={`px-4 py-1.5 rounded-lg whitespace-nowrap ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-              <span className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                {func.name}
-              </span>
+          <div>
+            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              2D Trajectory Plot
+            </span>
+            <span className={`ml-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              {func.name}
             </span>
           </div>
           {/* Legend */}
-          <div className="flex items-center gap-4 text-base">
-            {ALGORITHMS_2D.map(algo => {
-              const isEnabled = enabledAlgorithms.has(algo.id);
-              return (
+          <div className="flex items-center gap-4 text-xs">
+            {enabledAlgos.map(algo => (
+              <div key={algo.id} className="flex items-center gap-1.5">
                 <div
-                  key={algo.id}
-                  className={`flex items-center gap-2 transition-opacity ${isEnabled ? 'opacity-100' : 'opacity-30'}`}
-                >
-                  <div
-                    className="w-3.5 h-3.5 rounded-full"
-                    style={{ backgroundColor: algo.color }}
-                  />
-                  <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{algo.name}</span>
-                </div>
-              );
-            })}
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ backgroundColor: algo.color }}
+                />
+                <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{algo.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
