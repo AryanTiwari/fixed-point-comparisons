@@ -89,9 +89,7 @@ function FunctionDropdown({
       {isOpen && (
         <div
           className={`absolute z-50 w-full mt-1 rounded-lg border shadow-lg max-h-80 overflow-y-auto ${
-            isDark
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200"
+            isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
           }`}
         >
           {functions.map((func) => (
@@ -329,7 +327,6 @@ function App() {
     <div
       className={`min-h-screen p-4 md:p-8 pb-40 transition-colors duration-300 ${isDark ? "bg-gray-900 text-white" : "bg-[#f8f9fb] text-gray-900"}`}
     >
-
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8 flex justify-between items-start">
@@ -455,7 +452,9 @@ function App() {
                     isDark={isDark}
                   />
 
-                  <div className={`pt-2 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+                  <div
+                    className={`pt-2 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+                  >
                     <h4
                       className={`text-sm font-medium mb-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}
                     >
@@ -465,9 +464,7 @@ function App() {
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-0.5 bg-blue-500 rounded"></div>
                         <span
-                          className={
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }
+                          className={isDark ? "text-gray-300" : "text-gray-600"}
                         >
                           g(x) curve
                         </span>
@@ -475,9 +472,7 @@ function App() {
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-0.5 bg-gray-500"></div>
                         <span
-                          className={
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }
+                          className={isDark ? "text-gray-300" : "text-gray-600"}
                         >
                           y = x line
                         </span>
@@ -485,9 +480,7 @@ function App() {
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                         <span
-                          className={
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }
+                          className={isDark ? "text-gray-300" : "text-gray-600"}
                         >
                           Fixed point
                         </span>
@@ -495,9 +488,7 @@ function App() {
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
                         <span
-                          className={
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }
+                          className={isDark ? "text-gray-300" : "text-gray-600"}
                         >
                           Start point
                         </span>
@@ -704,9 +695,7 @@ function App() {
             >
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <span
-                    className={isDark ? "text-gray-400" : "text-gray-500"}
-                  >
+                  <span className={isDark ? "text-gray-400" : "text-gray-500"}>
                     System:
                   </span>
                   <span
@@ -724,17 +713,13 @@ function App() {
                 )}
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                  <span
-                    className={isDark ? "text-gray-400" : "text-gray-500"}
-                  >
+                  <span className={isDark ? "text-gray-400" : "text-gray-500"}>
                     Fixed point
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                  <span
-                    className={isDark ? "text-gray-400" : "text-gray-500"}
-                  >
+                  <span className={isDark ? "text-gray-400" : "text-gray-500"}>
                     Starting point
                   </span>
                 </div>

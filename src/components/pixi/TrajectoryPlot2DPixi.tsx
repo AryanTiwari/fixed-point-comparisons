@@ -503,6 +503,15 @@ export function TrajectoryPlot2DPixi({
 
           trajectoryGraphics.moveTo(sx1, sy1);
           trajectoryGraphics.lineTo(sx2, sy2);
+        } else if (!nextStep && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          // Only draw the final segment to gx when showing the LAST step of the full iteration
+          const sx1 = toScreenX(px);
+          const sy1 = toScreenY(py);
+          const sx2 = toScreenX(step.gx[0]);
+          const sy2 = toScreenY(step.gx[1]);
+
+          trajectoryGraphics.moveTo(sx1, sy1);
+          trajectoryGraphics.lineTo(sx2, sy2);
         }
       });
 
@@ -521,6 +530,14 @@ export function TrajectoryPlot2DPixi({
 
         algoPointsGraphics.circle(sx, sy, 4);
         algoPointsGraphics.fill({ color: algoColor, alpha: isLast ? 1 : 0.5 });
+
+        // Only draw the final gx point when showing the LAST step of the full iteration
+        if (isLast && i === result.steps.length - 1 && step.gx && isFinite(step.gx[0]) && isFinite(step.gx[1])) {
+          const gxSx = toScreenX(step.gx[0]);
+          const gxSy = toScreenY(step.gx[1]);
+          algoPointsGraphics.circle(gxSx, gxSy, 4);
+          algoPointsGraphics.fill({ color: algoColor, alpha: 1 });
+        }
       });
     });
 
